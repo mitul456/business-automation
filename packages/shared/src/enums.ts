@@ -1,0 +1,229 @@
+export enum UserStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  INVITED = 'INVITED',
+}
+
+export enum WorkspaceRole {
+  OWNER = 'OWNER',
+  ADMIN = 'ADMIN',
+  MANAGER = 'MANAGER',
+  AGENT = 'AGENT',
+}
+
+export enum TenantStatus {
+  TRIAL = 'TRIAL',
+  ACTIVE = 'ACTIVE',
+  PAST_DUE = 'PAST_DUE',
+  SUSPENDED = 'SUSPENDED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum PlanTier {
+  STARTER = 'STARTER',
+  GROWTH = 'GROWTH',
+  PRO = 'PRO',
+  ENTERPRISE = 'ENTERPRISE',
+}
+
+export enum BillingCycle {
+  MONTHLY = 'MONTHLY',
+  YEARLY = 'YEARLY',
+}
+
+export enum CreditTransactionType {
+  SUBSCRIPTION_GRANT = 'SUBSCRIPTION_GRANT',
+  TOPUP_PURCHASE = 'TOPUP_PURCHASE',
+  BONUS = 'BONUS',
+  USAGE_CHAT = 'USAGE_CHAT',
+  USAGE_VISION = 'USAGE_VISION',
+  USAGE_VOICE = 'USAGE_VOICE',
+  USAGE_EMBEDDING = 'USAGE_EMBEDDING',
+  REFUND = 'REFUND',
+}
+
+export enum ChannelType {
+  FACEBOOK_PAGE = 'FACEBOOK_PAGE',
+  INSTAGRAM = 'INSTAGRAM',
+  WHATSAPP_BUSINESS = 'WHATSAPP_BUSINESS',
+  LIVECHAT = 'LIVECHAT',
+}
+
+export enum ChannelStatus {
+  CONNECTED = 'CONNECTED',
+  DISCONNECTED = 'DISCONNECTED',
+  EXPIRED = 'EXPIRED',
+  ERROR = 'ERROR',
+}
+
+export enum ConversationStatus {
+  OPEN = 'OPEN',
+  BOT_ACTIVE = 'BOT_ACTIVE',
+  HUMAN_HANDOVER = 'HUMAN_HANDOVER',
+  SNOOZED = 'SNOOZED',
+  RESOLVED = 'RESOLVED',
+}
+
+export enum Priority {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  URGENT = 'URGENT',
+}
+
+export enum SenderType {
+  CUSTOMER = 'CUSTOMER',
+  AGENT = 'AGENT',
+  BOT = 'BOT',
+  SYSTEM = 'SYSTEM',
+}
+
+export enum MessageContentType {
+  TEXT = 'TEXT',
+  IMAGE = 'IMAGE',
+  AUDIO = 'AUDIO',
+  VIDEO = 'VIDEO',
+  FILE = 'FILE',
+  PRODUCT_CARD = 'PRODUCT_CARD',
+  ORDER_CARD = 'ORDER_CARD',
+  TEMPLATE = 'TEMPLATE',
+}
+
+export enum DeliveryStatus {
+  SENDING = 'SENDING',
+  SENT = 'SENT',
+  DELIVERED = 'DELIVERED',
+  READ = 'READ',
+  FAILED = 'FAILED',
+}
+
+export enum Sentiment {
+  POSITIVE = 'POSITIVE',
+  NEUTRAL = 'NEUTRAL',
+  NEGATIVE = 'NEGATIVE',
+}
+
+export enum LeadStage {
+  NEW = 'NEW',
+  CONTACTED = 'CONTACTED',
+  QUALIFIED = 'QUALIFIED',
+  PROPOSAL_SENT = 'PROPOSAL_SENT',
+  WON = 'WON',
+  LOST = 'LOST',
+}
+
+export enum ProductStatus {
+  ACTIVE = 'ACTIVE',
+  DRAFT = 'DRAFT',
+  OUT_OF_STOCK = 'OUT_OF_STOCK',
+  ARCHIVED = 'ARCHIVED',
+}
+
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  PROCESSING = 'PROCESSING',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+  REFUNDED = 'REFUNDED',
+}
+
+export enum PaymentStatus {
+  UNPAID = 'UNPAID',
+  PARTIALLY_PAID = 'PARTIALLY_PAID',
+  PAID = 'PAID',
+  REFUNDED = 'REFUNDED',
+  FAILED = 'FAILED',
+}
+
+export enum PaymentMethod {
+  COD = 'COD',
+  BKASH = 'BKASH',
+  NAGAD = 'NAGAD',
+  STRIPE = 'STRIPE',
+  SSLCOMMERZ = 'SSLCOMMERZ',
+}
+
+export enum PaymentProvider {
+  BKASH = 'BKASH',
+  NAGAD = 'NAGAD',
+  STRIPE = 'STRIPE',
+  SSLCOMMERZ = 'SSLCOMMERZ',
+  MANUAL = 'MANUAL',
+}
+
+export enum CourierProvider {
+  STEADFAST = 'STEADFAST',
+  PATHAO = 'PATHAO',
+  REDX = 'REDX',
+  MANUAL = 'MANUAL',
+}
+
+export enum ShipmentStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  PICKED_UP = 'PICKED_UP',
+  IN_TRANSIT = 'IN_TRANSIT',
+  DELIVERED = 'DELIVERED',
+  RETURNED = 'RETURNED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum AiTone {
+  FRIENDLY = 'FRIENDLY',
+  PROFESSIONAL = 'PROFESSIONAL',
+  DIRECT = 'DIRECT',
+  PERSUASIVE = 'PERSUASIVE',
+}
+
+export enum AiLanguage {
+  AUTO = 'AUTO',
+  BENGALI = 'BENGALI',
+  ENGLISH = 'ENGLISH',
+  BANGLISH = 'BANGLISH',
+}
+
+export enum DocSourceType {
+  FAQ = 'FAQ',
+  MANUAL_TEXT = 'MANUAL_TEXT',
+  PDF_FILE = 'PDF_FILE',
+  URL_SCRAPE = 'URL_SCRAPE',
+}
+
+export enum DocStatus {
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  INDEXED = 'INDEXED',
+  FAILED = 'FAILED',
+}
+
+export enum WorkflowTriggerType {
+  NEW_MESSAGE = 'NEW_MESSAGE',
+  KEYWORD_DETECTED = 'KEYWORD_DETECTED',
+  ORDER_CREATED = 'ORDER_CREATED',
+  ORDER_STATUS_CHANGED = 'ORDER_STATUS_CHANGED',
+  PAYMENT_RECEIVED = 'PAYMENT_RECEIVED',
+  INACTIVITY_TIMEOUT = 'INACTIVITY_TIMEOUT',
+  HUMAN_HANDOVER_REQUESTED = 'HUMAN_HANDOVER_REQUESTED',
+}
+
+export enum WorkflowActionType {
+  SEND_MESSAGE = 'SEND_MESSAGE',
+  AI_GENERATE_REPLY = 'AI_GENERATE_REPLY',
+  ASSIGN_AGENT = 'ASSIGN_AGENT',
+  ADD_CUSTOMER_TAG = 'ADD_CUSTOMER_TAG',
+  UPDATE_LEAD_STAGE = 'UPDATE_LEAD_STAGE',
+  DISPATCH_COURIER_PARCEL = 'DISPATCH_COURIER_PARCEL',
+  TRIGGER_WEBHOOK = 'TRIGGER_WEBHOOK',
+  WAIT_DELAY = 'WAIT_DELAY',
+}
+
+export enum BookingStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+  NO_SHOW = 'NO_SHOW',
+}
