@@ -17,6 +17,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import {
   CreateTenantInput,
+  UpdateWorkspaceInput,
   InviteMemberInput,
   WorkspaceRole,
 } from '@omniflow/shared';
@@ -34,10 +35,25 @@ export class TenantsController {
     return this.tenantsService.createTenant(userId, body);
   }
 
+  @Get()
+  async listUserWorkspaces(@CurrentUser('id') userId: string) {
+    return this.tenantsService.listUserWorkspaces(userId);
+  }
+
   @Get('current')
   @UseGuards(TenantGuard)
   async getCurrentWorkspace(@Req() req: any) {
     return this.tenantsService.getTenantDetails(req.tenantId);
+  }
+
+  @Patch('current')
+  @UseGuards(TenantGuard, RolesGuard)
+  @Roles(WorkspaceRole.ADMIN, WorkspaceRole.OWNER)
+  async updateCurrentWorkspace(
+    @Req() req: any,
+    @Body() body: UpdateWorkspaceInput
+  ) {
+    return this.tenantsService.updateTenant(req.tenantId, body);
   }
 
   @Get('current/members')

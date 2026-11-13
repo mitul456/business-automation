@@ -2,13 +2,13 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
-  ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import {
   CreateOrderInput,
   OrderStatus,
   PaymentStatus,
+  PaymentMethod,
   UpdateOrderStatusInput,
 } from '@omniflow/shared';
 
@@ -142,12 +142,24 @@ export class OrdersService {
         include: { items: true, customer: true },
       });
 
-      // Decrement stock for ordered items
+      // Decrement stock and record inventory transaction
       for (const item of input.items) {
-        await tx.product.update({
+        const prod = await tx.product.update({
           where: { id: item.productId },
           data: {
             stockQuantity: { decrement: item.quantity },
+          },
+        });
+
+        await tx.inventoryTransaction.create({
+          data: {
+            tenantId,
+            productId: item.productId,
+            quantityDelta: -item.quantity,
+            balanceAfter: prod?.stockQuantity ?? 0,
+            type: 'ORDER_DEDUCTION',
+            referenceId: order.id,
+            notes: `Stock deducted for Order #${order.orderNumber}`,
           },
         });
       }
@@ -161,6 +173,20 @@ export class OrdersService {
         },
       });
 
+      // Log Customer Timeline Event
+      await tx.customerTimelineEvent.create({
+        data: {
+          tenantId,
+          customerId: input.customerId,
+          eventType: 'ORDER_CREATED',
+          title: `Placed Order #${order.orderNumber}`,
+          description: `Total: ৳${totalAmount.toLocaleString()} (${input.items.length} item${
+            input.items.length > 1 ? 's' : ''
+          })`,
+          metadata: { orderId: order.id, totalAmount },
+        },
+      });
+
       return order;
     });
   }
@@ -168,12 +194,115 @@ export class OrdersService {
   async updateOrderStatus(tenantId: string, orderId: string, input: UpdateOrderStatusInput) {
     const order = await this.getOrder(tenantId, orderId);
 
-    return this.prisma.order.update({
+    if (input.status === OrderStatus.CANCELLED && order.status !== OrderStatus.CANCELLED) {
+      return this.cancelOrder(tenantId, orderId, 'Cancelled by operator');
+    }
+
+    const updated = await this.prisma.order.update({
       where: { id: order.id },
       data: {
         status: input.status,
         courierName: input.courierName || order.courierName,
         courierTrackingId: input.courierTrackingId || order.courierTrackingId,
+      },
+      include: { customer: true, items: true },
+    });
+
+    // Record timeline event
+    await this.prisma.customerTimelineEvent.create({
+      data: {
+        tenantId,
+        customerId: order.customerId,
+        eventType: 'ORDER_STATUS_CHANGED',
+        title: `Order #${order.orderNumber} Status Updated`,
+        description: `Status changed to ${input.status}`,
+        metadata: { orderId: order.id, newStatus: input.status },
+      },
+    });
+
+    return updated;
+  }
+
+  /**
+   * Cancel order: restores stock quantities, logs inventory reversal, updates customer metrics
+   */
+  async cancelOrder(tenantId: string, orderId: string, reason?: string) {
+    const order = await this.getOrder(tenantId, orderId);
+
+    if (order.status === OrderStatus.CANCELLED) {
+      return order; // Already cancelled
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Update order status
+      const updatedOrder = await tx.order.update({
+        where: { id: order.id },
+        data: {
+          status: OrderStatus.CANCELLED,
+          notes: reason ? `${order.notes ? order.notes + '\n' : ''}Cancellation reason: ${reason}` : order.notes,
+        },
+        include: { customer: true, items: true },
+      });
+
+      // 2. Restore inventory quantities and log transactions
+      for (const item of order.items) {
+        const prod = await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stockQuantity: { increment: item.quantity },
+          },
+        });
+
+        await tx.inventoryTransaction.create({
+          data: {
+            tenantId,
+            productId: item.productId,
+            quantityDelta: item.quantity,
+            balanceAfter: prod.stockQuantity,
+            type: 'ORDER_CANCEL_RESTORE',
+            referenceId: order.id,
+            notes: `Inventory restored due to cancellation of Order #${order.orderNumber}`,
+          },
+        });
+      }
+
+      // 3. Decrement customer total metrics
+      await tx.customer.update({
+        where: { id: order.customerId },
+        data: {
+          totalOrders: { decrement: 1 },
+          totalSpent: { decrement: order.totalAmount },
+        },
+      });
+
+      // 4. Log timeline event
+      await tx.customerTimelineEvent.create({
+        data: {
+          tenantId,
+          customerId: order.customerId,
+          eventType: 'ORDER_CANCELLED',
+          title: `Order #${order.orderNumber} Cancelled`,
+          description: reason || 'Order cancelled and stock restored to inventory',
+          metadata: { orderId: order.id },
+        },
+      });
+
+      return updatedOrder;
+    });
+  }
+
+  async updatePaymentStatus(
+    tenantId: string,
+    orderId: string,
+    data: { paymentStatus: PaymentStatus; paymentMethod?: PaymentMethod }
+  ) {
+    const order = await this.getOrder(tenantId, orderId);
+
+    return this.prisma.order.update({
+      where: { id: order.id },
+      data: {
+        paymentStatus: data.paymentStatus,
+        ...(data.paymentMethod && { paymentMethod: data.paymentMethod }),
       },
       include: { customer: true, items: true },
     });
@@ -189,10 +318,12 @@ export class OrdersService {
       store: {
         name: tenant?.name,
         currency: order.currency,
+        country: tenant?.country,
       },
       customer: {
         name: order.customer.name,
         phone: order.customer.phone,
+        email: order.customer.email,
         address: order.shippingAddress,
       },
       items: order.items,
@@ -202,6 +333,8 @@ export class OrdersService {
       totalAmount: order.totalAmount,
       paymentMethod: order.paymentMethod,
       paymentStatus: order.paymentStatus,
+      courierName: order.courierName,
+      courierTrackingId: order.courierTrackingId,
     };
   }
 }

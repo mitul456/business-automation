@@ -129,11 +129,11 @@ Respond strictly in JSON format matching:
   }
 
   /**
-   * Whisper Speech-to-Text: Transcribes voice notes into text
+   * Whisper Speech-to-Text: Transcribes voice notes into text (Bengali & English support)
    */
   async transcribeAudio(audioBuffer: Buffer, filename = 'voice_note.ogg'): Promise<string> {
-    if (!this.apiKey) {
-      return 'ভাই আপনাদের পাঞ্জাবিটার সাইজ ৪২ কি স্টকে আছে? ক্যাশ অন ডেলিভারিতে নিতে চাচ্ছিলাম।';
+    if (!this.apiKey || this.apiKey.includes('placeholder')) {
+      return 'ভাই আপনাদের নীল পাঞ্জাবিটার সাইজ ৪২ কি স্টকে আছে? ক্যাশ অন ডেলিভারিতে নিতে চাচ্ছিলাম।';
     }
 
     const FormData = require('form-data');
@@ -150,6 +150,38 @@ Respond strictly in JSON format matching:
     });
 
     return response.data.text || '';
+  }
+
+  /**
+   * OpenAI TTS-1: Text-to-Speech audio synthesis for voice responses
+   */
+  async synthesizeSpeech(text: string, voice = 'nova'): Promise<Buffer> {
+    if (!this.apiKey || this.apiKey.includes('placeholder')) {
+      // Minimal audio frame buffer
+      return Buffer.from([
+        0xff, 0xfb, 0x90, 0x64, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      ]);
+    }
+
+    const response = await axios.post(
+      'https://api.openai.com/v1/audio/speech',
+      {
+        model: 'tts-1',
+        input: text,
+        voice,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        responseType: 'arraybuffer',
+        timeout: 30000,
+      }
+    );
+
+    return Buffer.from(response.data);
   }
 
   /**

@@ -1,4 +1,16 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+function getApiBase(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname.includes('antcodes.dev') || window.location.hostname === 'omniflow.antcodes.dev') {
+      return `${window.location.origin}/api/v1`;
+    }
+  }
+  return 'http://localhost:4000/api/v1';
+}
+
+const API_BASE = getApiBase();
 
 export class ApiClient {
   private static getToken(): string | null {

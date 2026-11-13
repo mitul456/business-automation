@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { Bot, ArrowRight, Lock, Mail, AlertCircle } from 'lucide-react';
+import { Bot, ArrowRight, Lock, Mail, AlertCircle, ShieldAlert, Store } from 'lucide-react';
 import { Button, Input, Card } from '@omniflow/ui';
 
 export default function LoginPage() {
@@ -21,15 +21,24 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await login(email, password);
-      router.push('/dashboard');
+      const loggedUser = await login(email, password);
+      // Route based on role: Super Admin to /admin, business owners to /dashboard
+      if (loggedUser?.isSuperAdmin) {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err: any) {
-      // In development, gracefully navigate to dashboard with demo workspace if backend isn't actively reachable
-      console.warn('Login fallback to demo session:', err.message);
-      router.push('/dashboard');
+      setError(err.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
+  };
+
+  const fillCredentials = (userEmail: string, userPass: string) => {
+    setEmail(userEmail);
+    setPassword(userPass);
+    setError('');
   };
 
   return (
@@ -89,9 +98,9 @@ export default function LoginPage() {
                 <input type="checkbox" defaultChecked className="rounded text-indigo-600 focus:ring-indigo-500" />
                 <span>Remember me</span>
               </label>
-              <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+              <Link href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             <Button
@@ -104,11 +113,27 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Quick Demo Credentials Pill */}
-          <div className="mt-6 pt-4 border-t border-slate-100 text-center">
-            <p className="text-[11px] text-slate-400 font-medium">
-              Demo Credentials: <span className="font-semibold text-slate-700">mitul@apexstore.com</span> / <span className="font-semibold text-slate-700">Admin123!</span>
-            </p>
+          {/* Quick Demo Credentials Switcher */}
+          <div className="mt-6 pt-4 border-t border-slate-100 space-y-2">
+            <p className="text-[11px] text-center text-slate-400 font-medium">Quick Fill Credentials for Testing:</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => fillCredentials('mitul@apexstore.com', 'Admin123!')}
+                className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-[11px] font-semibold text-slate-700 transition-colors cursor-pointer"
+              >
+                <Store className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Store Owner</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => fillCredentials('admin@omniflow.ai', 'Admin123!')}
+                className="flex items-center justify-center gap-1.5 p-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-[11px] font-semibold text-amber-800 transition-colors cursor-pointer border border-amber-200/60"
+              >
+                <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
+                <span>Super Admin</span>
+              </button>
+            </div>
           </div>
         </Card>
       </div>

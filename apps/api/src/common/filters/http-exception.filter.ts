@@ -29,7 +29,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? (res as any).message
         : exception.message;
     } else if (exception instanceof Error) {
-      message = exception.message;
+      // Prevent internal database details and raw traces from leaking to public clients in production
+      message = process.env.NODE_ENV === 'production'
+        ? 'An internal server error occurred. Please try again later.'
+        : exception.message;
     }
 
     this.logger.error(`[${request.method}] ${request.url} - Status ${status} - Error: ${message}`);

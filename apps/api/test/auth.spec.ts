@@ -1,5 +1,7 @@
 import { AuthService } from '../src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcryptjs';
+import { UserStatus, WorkspaceRole } from '@omniflow/shared';
 
 describe('AuthService Unit Tests', () => {
   let authService: AuthService;
@@ -28,6 +30,12 @@ describe('AuthService Unit Tests', () => {
       },
       aiAgentConfig: {
         create: jest.fn(),
+      },
+      userSession: {
+        create: jest.fn().mockResolvedValue({ id: 'session-123' }),
+        findUnique: jest.fn(),
+        update: jest.fn(),
+        updateMany: jest.fn(),
       },
       $transaction: jest.fn(async (cb) => {
         return cb(mockPrisma);
@@ -89,5 +97,78 @@ describe('AuthService Unit Tests', () => {
         password: 'Password123',
       })
     ).rejects.toThrow('An account with this email already exists');
+  });
+
+  it('should guarantee newly registered users strictly receive isSuperAdmin=false', async () => {
+    mockPrisma.user.findUnique.mockResolvedValue(null);
+    mockPrisma.user.create.mockImplementation(({ data }) => Promise.resolve({
+      id: 'user-new-id',
+      ...data,
+    }));
+    mockPrisma.tenant.create.mockResolvedValue({
+      id: 'tenant-new-id',
+      name: 'New Shop',
+      creditBalance: 500,
+    });
+
+    const result = await authService.register({
+      name: 'New Owner',
+      email: 'newowner@test.com',
+      password: 'SecurePass123!',
+    });
+
+    expect(result.user.isSuperAdmin).toBe(false);
+    expect(mockPrisma.user.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          isSuperAdmin: false,
+        }),
+      })
+    );
+  });
+
+  it('should reject login attempt if user account is suspended', async () => {
+    const passwordHash = await bcrypt.hash('Password123!', 10);
+    mockPrisma.user.findUnique.mockResolvedValue({
+      id: 'user-suspended',
+      email: 'suspended@test.com',
+      passwordHash,
+      status: UserStatus.SUSPENDED,
+      memberships: [{ tenantId: 'tenant-1', role: WorkspaceRole.OWNER }],
+    });
+
+    await expect(
+      authService.login({
+        email: 'suspended@test.com',
+        password: 'Password123!',
+      })
+    ).rejects.toThrow('Your account has been suspended or deactivated');
+  });
+
+  it('should invalidate active sessions upon user logout', async () => {
+    mockPrisma.userSession.updateMany.mockResolvedValue({ count: 1 });
+
+    const result = await authService.logout('user-123', 'refresh-token-xyz');
+
+    expect(result.success).toBe(true);
+    expect(mockPrisma.userSession.updateMany).toHaveBeenCalledWith({
+      where: expect.objectContaining({
+        userId: 'user-123',
+        revoked: false,
+      }),
+      data: { revoked: true },
+    });
+  });
+
+  it('should invalidate all active sessions for a user on emergency revocation', async () => {
+    mockPrisma.userSession.updateMany.mockResolvedValue({ count: 4 });
+
+    const result = await authService.revokeAllSessions('user-123');
+
+    expect(result.success).toBe(true);
+    expect(mockPrisma.userSession.updateMany).toHaveBeenCalledWith({
+      where: { userId: 'user-123', revoked: false },
+      data: { revoked: true },
+    });
   });
 });

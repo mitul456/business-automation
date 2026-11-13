@@ -24,10 +24,9 @@ export default function RegisterPage() {
 
     try {
       await register(name, email, password, workspaceName);
-      router.push('/dashboard');
+      router.push('/onboarding');
     } catch (err: any) {
-      console.warn('Registration fallback to dashboard:', err.message);
-      router.push('/dashboard');
+      setError(err.message || 'Registration failed. Please check your details.');
     } finally {
       setLoading(false);
     }

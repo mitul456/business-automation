@@ -5,6 +5,7 @@ export * from './openai/openai.client';
 export * from './payments/bkash.client';
 export * from './payments/nagad.client';
 export * from './payments/stripe.client';
+export * from './payments/sslcommerz.client';
 export * from './couriers/steadfast.client';
 export * from './couriers/pathao.client';
 export * from './couriers/redx.client';

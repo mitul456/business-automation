@@ -5,7 +5,17 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { CreateTenantInput, InviteMemberInput, WorkspaceRole, TenantStatus } from '@omniflow/shared';
+import {
+  CreateTenantInput,
+  UpdateWorkspaceInput,
+  InviteMemberInput,
+  WorkspaceRole,
+  TenantStatus,
+  PlanTier,
+  CreditTransactionType,
+  AiTone,
+  AiLanguage,
+} from '@omniflow/shared';
 
 @Injectable()
 export class TenantsService {
@@ -24,11 +34,57 @@ export class TenantsService {
         data: {
           name: input.name,
           slug: input.slug,
+          category: input.category || 'GENERAL_RETAIL',
+          country: input.country || 'BD',
           currency: input.currency || 'BDT',
           timezone: input.timezone || 'Asia/Dhaka',
           defaultLanguage: input.defaultLanguage || 'bn',
           creditBalance: 500,
+          businessSettings: input.businessSettings || null,
           status: TenantStatus.ACTIVE,
+        },
+      });
+
+      // Grant subscription
+      await tx.tenantSubscription.create({
+        data: {
+          tenantId: tenant.id,
+          planTier: PlanTier.STARTER,
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        },
+      });
+
+      // Grant initial credits
+      await tx.aiCreditTransaction.create({
+        data: {
+          tenantId: tenant.id,
+          amount: 500,
+          type: CreditTransactionType.BONUS,
+          balanceAfter: 500,
+          description: 'Initial workspace bonus credits',
+        },
+      });
+
+      // Create default AI Agent Config
+      await tx.aiAgentConfig.create({
+        data: {
+          tenantId: tenant.id,
+          personaName: `${input.name} Assistant`,
+          systemPrompt: `You are the AI assistant for ${input.name}. Provide friendly, accurate customer support and assist with orders in both Bengali and English.`,
+          tone: AiTone.FRIENDLY,
+          language: AiLanguage.AUTO,
+          capabilities: {
+            autoOrderCreation: true,
+            productSearch: true,
+            imageRecognition: true,
+            voiceTranscription: true,
+            bookingAppointment: true,
+            sentimentAnalysis: true,
+          },
+          handoverKeywords: ['human', 'agent', 'support', 'প্রতিনিধি'],
+          fallbackMessageEn: 'Connecting you to a human agent shortly.',
+          fallbackMessageBn: 'আপনাকে কাস্টমার এজেন্টের সাথে যুক্ত করে দিচ্ছি।',
         },
       });
 
@@ -41,6 +97,29 @@ export class TenantsService {
       });
 
       return tenant;
+    });
+  }
+
+  async updateTenant(tenantId: string, input: UpdateWorkspaceInput) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+    });
+
+    if (!tenant) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+    return this.prisma.tenant.update({
+      where: { id: tenantId },
+      data: {
+        ...(input.name && { name: input.name }),
+        ...(input.category && { category: input.category }),
+        ...(input.country && { country: input.country }),
+        ...(input.timezone && { timezone: input.timezone }),
+        ...(input.currency && { currency: input.currency }),
+        ...(input.defaultLanguage && { defaultLanguage: input.defaultLanguage }),
+        ...(input.businessSettings && { businessSettings: input.businessSettings }),
+      },
     });
   }
 
@@ -66,6 +145,45 @@ export class TenantsService {
 
     if (!tenant) throw new NotFoundException('Workspace not found');
     return tenant;
+  }
+
+  async listUserWorkspaces(userId: string) {
+    const memberships = await this.prisma.workspaceMember.findMany({
+      where: { userId },
+      include: {
+        tenant: {
+          include: {
+            _count: {
+              select: {
+                members: true,
+                channels: true,
+                conversations: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    return memberships.map((m) => ({
+      membershipId: m.id,
+      role: m.role,
+      tenant: {
+        id: m.tenant.id,
+        name: m.tenant.name,
+        slug: m.tenant.slug,
+        category: m.tenant.category,
+        country: m.tenant.country,
+        currency: m.tenant.currency,
+        timezone: m.tenant.timezone,
+        creditBalance: m.tenant.creditBalance,
+        status: m.tenant.status,
+        memberCount: m.tenant._count.members,
+        channelCount: m.tenant._count.channels,
+        conversationCount: m.tenant._count.conversations,
+      },
+    }));
   }
 
   async listMembers(tenantId: string) {
@@ -115,7 +233,7 @@ export class TenantsService {
       data: {
         tenantId,
         userId: user.id,
-        role: input.role || WorkspaceRole.AGENT,
+        role: input.role || WorkspaceRole.SUPPORT_AGENT,
       },
       include: {
         user: {

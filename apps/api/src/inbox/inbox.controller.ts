@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Body,
   Param,
   Query,
@@ -60,7 +61,7 @@ export class InboxController {
     return this.inboxService.getMessages(
       req.tenantId,
       conversationId,
-      limit ? parseInt(limit, 10) : 50
+      limit ? parseInt(limit, 10) : 100
     );
   }
 
@@ -87,5 +88,108 @@ export class InboxController {
     @Param('conversationId') conversationId: string
   ) {
     return this.inboxService.returnToAi(req.tenantId, conversationId);
+  }
+
+  @Patch('conversations/:conversationId/assign')
+  async assignMember(
+    @Req() req: any,
+    @Param('conversationId') conversationId: string,
+    @Body() body: { memberId: string | null }
+  ) {
+    return this.inboxService.assignMember(req.tenantId, conversationId, body.memberId);
+  }
+
+  @Get('conversations/:conversationId/summary')
+  async getSummary(
+    @Req() req: any,
+    @Param('conversationId') conversationId: string
+  ) {
+    return this.inboxService.generateConversationSummary(req.tenantId, conversationId);
+  }
+
+  @Post('customers/:customerId/tags')
+  async addCustomerTag(
+    @Req() req: any,
+    @Param('customerId') customerId: string,
+    @Body() body: { tag: string }
+  ) {
+    return this.inboxService.addCustomerTag(req.tenantId, customerId, body.tag);
+  }
+
+  @Delete('customers/:customerId/tags/:tag')
+  async removeCustomerTag(
+    @Req() req: any,
+    @Param('customerId') customerId: string,
+    @Param('tag') tag: string
+  ) {
+    return this.inboxService.removeCustomerTag(req.tenantId, customerId, tag);
+  }
+
+  @Post('conversations/:conversationId/quick-order')
+  async createQuickOrder(
+    @Req() req: any,
+    @Param('conversationId') conversationId: string,
+    @Body()
+    body: {
+      productId: string;
+      productName: string;
+      variantSize?: string;
+      variantColor?: string;
+      quantity: number;
+      unitPrice: number;
+      customerName: string;
+      customerPhone: string;
+      customerAddress: string;
+      deliveryArea: 'INSIDE_DHAKA' | 'OUTSIDE_DHAKA';
+      deliveryCost: number;
+      notes?: string;
+    }
+  ) {
+    return this.inboxService.createQuickOrder({
+      tenantId: req.tenantId,
+      conversationId,
+      memberId: req.memberId,
+      input: body,
+    });
+  }
+
+  @Post('conversations/:conversationId/simulate-customer')
+  async simulateCustomer(
+    @Req() req: any,
+    @Param('conversationId') conversationId: string,
+    @Body()
+    body: {
+      content: string;
+      contentType?: 'TEXT' | 'IMAGE' | 'AUDIO';
+      mediaUrl?: string;
+    }
+  ) {
+    return this.inboxService.simulateCustomerMessage({
+      tenantId: req.tenantId,
+      conversationId,
+      content: body.content,
+      contentType: body.contentType,
+      mediaUrl: body.mediaUrl,
+    });
+  }
+
+  @Post('conversations/:conversationId/ai-reply')
+  async triggerAiReply(
+    @Req() req: any,
+    @Param('conversationId') conversationId: string,
+    @Body()
+    body: {
+      userQuery?: string;
+      imageUrl?: string;
+      generateVoiceReply?: boolean;
+    }
+  ) {
+    return this.inboxService.triggerAiReply({
+      tenantId: req.tenantId,
+      conversationId,
+      userQuery: body.userQuery,
+      imageUrl: body.imageUrl,
+      generateVoiceReply: body.generateVoiceReply,
+    });
   }
 }

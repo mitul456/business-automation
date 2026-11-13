@@ -42,4 +42,40 @@ export class AiAgentController {
       imageUrl: body.imageUrl,
     });
   }
+
+  @Post('playground')
+  async playgroundSimulation(
+    @Req() req: any,
+    @Body() body: { query: string; imageUrl?: string; conversationHistory?: any[] }
+  ) {
+    return this.aiAgentService.runPlaygroundSimulation({
+      tenantId: req.tenantId,
+      userQuery: body.query,
+      imageUrl: body.imageUrl,
+      conversationHistory: body.conversationHistory,
+    });
+  }
+
+  @Post('transcribe-voice')
+  async transcribeVoice(
+    @Req() req: any,
+    @Body() body: { audioBase64?: string; filename?: string }
+  ) {
+    const buffer = body.audioBase64
+      ? Buffer.from(body.audioBase64, 'base64')
+      : Buffer.from('mock_voice_audio_sample');
+    return this.aiAgentService.transcribeVoice(buffer, body.filename);
+  }
+
+  @Post('synthesize-voice')
+  async synthesizeVoice(
+    @Req() req: any,
+    @Body() body: { text: string; voice?: string }
+  ) {
+    const audioBuffer = await this.aiAgentService.synthesizeVoice(body.text, body.voice);
+    return {
+      audioBase64: audioBuffer.toString('base64'),
+      mimeType: 'audio/mpeg',
+    };
+  }
 }

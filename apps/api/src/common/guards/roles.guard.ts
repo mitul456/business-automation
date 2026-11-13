@@ -18,25 +18,31 @@ export class RolesGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const userRole = request.workspaceRole as WorkspaceRole;
+    const userRole = (request.workspaceRole || request.user?.role) as WorkspaceRole;
 
     if (!userRole) {
-      throw new ForbiddenException('Role permission check failed: No role assigned');
+      throw new ForbiddenException('Role permission check failed: No role assigned in current workspace context');
     }
 
-    // Role hierarchy: OWNER > ADMIN > MANAGER > AGENT
+    // Role Hierarchy:
+    // OWNER (5) > ADMIN (4) > MANAGER (3) > SALES_AGENT / SUPPORT_AGENT / AGENT (2) > VIEWER (1)
     const hierarchy: Record<WorkspaceRole, number> = {
-      [WorkspaceRole.OWNER]: 4,
-      [WorkspaceRole.ADMIN]: 3,
-      [WorkspaceRole.MANAGER]: 2,
-      [WorkspaceRole.AGENT]: 1,
+      [WorkspaceRole.OWNER]: 5,
+      [WorkspaceRole.ADMIN]: 4,
+      [WorkspaceRole.MANAGER]: 3,
+      [WorkspaceRole.SALES_AGENT]: 2,
+      [WorkspaceRole.SUPPORT_AGENT]: 2,
+      [WorkspaceRole.AGENT]: 2,
+      [WorkspaceRole.VIEWER]: 1,
     };
 
     const userLevel = hierarchy[userRole] || 0;
     const hasRole = requiredRoles.some((role) => userLevel >= (hierarchy[role] || 0));
 
     if (!hasRole) {
-      throw new ForbiddenException('Insufficient permissions for this action');
+      throw new ForbiddenException(
+        `Insufficient permissions: Role ${userRole} is not authorized for this operation. Required: ${requiredRoles.join(', ')}`
+      );
     }
 
     return true;

@@ -16,9 +16,11 @@ import { BookingsModule } from './bookings/bookings.module';
 import { BillingModule } from './billing/billing.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { SuperAdminModule } from './super-admin/super-admin.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
+    HealthModule,
     AuthModule,
     TenantsModule,
     ChannelsModule,

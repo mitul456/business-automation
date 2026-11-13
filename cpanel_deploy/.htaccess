@@ -1,0 +1,16 @@
+# ==============================================================================
+# OmniFlow SaaS — cPanel Apache Reverse Proxy (.htaccess)
+# Place this file in public_html
+# ==============================================================================
+RewriteEngine On
+
+# 1. Route API requests to NestJS Backend (Port 4000)
+RewriteRule ^api/(.*)$ http://127.0.0.1:4000/api/$1 [P,L]
+
+# 2. Route WebSockets to Backend Socket.IO
+RewriteCond %{HTTP:Upgrade} websocket [NC]
+RewriteCond %{HTTP:Connection} upgrade [NC]
+RewriteRule ^socket.io/(.*)$ ws://127.0.0.1:4000/socket.io/$1 [P,L]
+
+# 3. Route all other requests to Next.js Web Frontend (Port 3000)
+RewriteRule ^(.*)$ http://127.0.0.1:3000/$1 [P,L]

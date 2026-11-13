@@ -4,8 +4,15 @@ import { processAiMessageJob } from './processors/ai-generation.processor';
 import { processCourierSyncJob } from './processors/courier-sync.processor';
 import { processFollowupSequencesJob } from './processors/followup.processor';
 
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-const connection = new IORedis(redisUrl, { maxRetriesPerRequest: null, lazyConnect: true });
+const connection = process.env.REDIS_URL
+  ? new IORedis(process.env.REDIS_URL, { maxRetriesPerRequest: null, lazyConnect: true })
+  : new IORedis({
+      host: process.env.REDIS_HOST || 'localhost',
+      port: Number(process.env.REDIS_PORT) || 6379,
+      password: process.env.REDIS_PASSWORD || undefined,
+      maxRetriesPerRequest: null,
+      lazyConnect: true,
+    });
 
 async function startWorker() {
   console.log('⚡ Starting OmniFlow BullMQ Background Workers...');

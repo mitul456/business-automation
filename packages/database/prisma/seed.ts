@@ -169,7 +169,21 @@ async function main() {
 
   const p1 = await prisma.product.upsert({
     where: { tenantId_sku: { tenantId: tenant.id, sku: 'PJ-ROYAL-NAVY-M' } },
-    update: {},
+    update: {
+      images: [
+        'https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop',
+      ],
+      variants: [
+        { size: '38', color: 'Navy Blue', stockQuantity: 12, sku: 'PJ-ROYAL-38' },
+        { size: '40', color: 'Navy Blue', stockQuantity: 18, sku: 'PJ-ROYAL-40' },
+        { size: '42', color: 'Navy Blue', stockQuantity: 15, sku: 'PJ-ROYAL-42' },
+        { size: '44', color: 'Navy Blue', stockQuantity: 0, sku: 'PJ-ROYAL-44' },
+      ],
+      visualTags: ['panjabi', 'navy blue', 'embroidery', 'traditional', 'eid', 'cotton'],
+    },
     create: {
       tenantId: tenant.id,
       categoryId: categoryClothing.id,
@@ -180,15 +194,37 @@ async function main() {
       compareAtPrice: 3500.00,
       costPrice: 1600.00,
       stockQuantity: 45,
-      images: ['https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?w=600&auto=format&fit=crop'],
-      visualTags: ['panjabi', 'navy blue', 'embroidery', 'traditional', 'eid'],
+      images: [
+        'https://images.unsplash.com/photo-1597983073493-88cd35cf93b0?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format&fit=crop',
+      ],
+      visualTags: ['panjabi', 'navy blue', 'embroidery', 'traditional', 'eid', 'cotton'],
+      variants: [
+        { size: '38', color: 'Navy Blue', stockQuantity: 12, sku: 'PJ-ROYAL-38' },
+        { size: '40', color: 'Navy Blue', stockQuantity: 18, sku: 'PJ-ROYAL-40' },
+        { size: '42', color: 'Navy Blue', stockQuantity: 15, sku: 'PJ-ROYAL-42' },
+        { size: '44', color: 'Navy Blue', stockQuantity: 0, sku: 'PJ-ROYAL-44' },
+      ],
       status: ProductStatus.ACTIVE,
     },
   });
 
   const p2 = await prisma.product.upsert({
     where: { tenantId_sku: { tenantId: tenant.id, sku: 'WT-AMOLED-ULTRA' } },
-    update: {},
+    update: {
+      images: [
+        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&auto=format&fit=crop',
+      ],
+      variants: [
+        { size: '44mm', color: 'Midnight Black', stockQuantity: 50, sku: 'WT-ULTRA-BLK' },
+        { size: '44mm', color: 'Silver Grey', stockQuantity: 30, sku: 'WT-ULTRA-SLV' },
+      ],
+      visualTags: ['smartwatch', 'amoled', 'black', 'bluetooth', 'gadget', 'watch'],
+    },
     create: {
       tenantId: tenant.id,
       categoryId: categoryGadgets.id,
@@ -199,8 +235,50 @@ async function main() {
       compareAtPrice: 4200.00,
       costPrice: 2100.00,
       stockQuantity: 80,
-      images: ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop'],
-      visualTags: ['smartwatch', 'amoled', 'black', 'bluetooth', 'gadget'],
+      images: [
+        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=800&auto=format&fit=crop',
+      ],
+      visualTags: ['smartwatch', 'amoled', 'black', 'bluetooth', 'gadget', 'watch'],
+      variants: [
+        { size: '44mm', color: 'Midnight Black', stockQuantity: 50, sku: 'WT-ULTRA-BLK' },
+        { size: '44mm', color: 'Silver Grey', stockQuantity: 30, sku: 'WT-ULTRA-SLV' },
+      ],
+      status: ProductStatus.ACTIVE,
+    },
+  });
+
+  const p3 = await prisma.product.upsert({
+    where: { tenantId_sku: { tenantId: tenant.id, sku: 'WL-LEATHER-BROWN' } },
+    update: {
+      images: [
+        'https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1606503829058-29a399426f86?w=800&auto=format&fit=crop',
+      ],
+      variants: [
+        { size: 'Standard', color: 'Cognac Brown', stockQuantity: 4, sku: 'WL-BROWN' },
+      ],
+      visualTags: ['wallet', 'leather', 'brown', 'accessories', 'bifold'],
+    },
+    create: {
+      tenantId: tenant.id,
+      categoryId: categoryGadgets.id,
+      name: 'Pure Full Grain Leather Bi-fold Wallet',
+      sku: 'WL-LEATHER-BROWN',
+      description: 'Handcrafted cowhide full-grain genuine leather bi-fold wallet with RFID protection.',
+      price: 1450.00,
+      compareAtPrice: 1800.00,
+      costPrice: 850.00,
+      stockQuantity: 4,
+      images: [
+        'https://images.unsplash.com/photo-1627123424574-724758594e93?w=800&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1606503829058-29a399426f86?w=800&auto=format&fit=crop',
+      ],
+      visualTags: ['wallet', 'leather', 'brown', 'accessories', 'bifold'],
+      variants: [
+        { size: 'Standard', color: 'Cognac Brown', stockQuantity: 4, sku: 'WL-BROWN' },
+      ],
       status: ProductStatus.ACTIVE,
     },
   });

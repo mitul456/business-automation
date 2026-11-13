@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmniFlow SaaS — সম্পূর্ণ প্রজেক্ট ও ডিপ্লয়মেন্ট ডকুমেন্টেশন</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #3730a3;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-body: #0b0f19;
+            --bg-card: #111827;
+            --bg-sidebar: #0d121f;
+            --bg-code: #030712;
+            --border: #1f2937;
+            --border-highlight: #374151;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --text-code: #38bdf8;
+            --font-main: 'Hind Siliguri', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-code: 'Fira Code', monospace;
+            --sidebar-width: 320px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.7;
+            font-size: 16px;
+            overflow-x: hidden;
+        }
+
+        /* Layout */
+        .doc-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .doc-sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            overflow-y: auto;
+            z-index: 100;
+            padding: 24px 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .doc-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .doc-sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-highlight);
+            border-radius: 4px;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #fff;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .brand-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-text span {
+            font-size: 12px;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .nav-group-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin: 20px 0 8px 10px;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links li a:hover,
+        .nav-links li a.active {
+            color: #fff;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent);
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        /* Main Content Area */
+        .doc-main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 40px 60px;
+            max-width: 1280px;
+        }
+
+        /* Header / Banner */
+        .doc-header-banner {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(6, 182, 212, 0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 36px;
+            margin-bottom: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .doc-header-banner::after {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.3), transparent 70%);
+            border-radius: 50%;
+        }
+
+        .header-title-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .doc-header-banner h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .doc-header-banner p {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 850px;
+            margin-bottom: 24px;
+        }
+
+        .banner-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 14px;
+            color: #d1d5db;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 16px;
+        }
+
+        .banner-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Typography & Section styling */
+        section {
+            margin-bottom: 64px;
+            scroll-margin-top: 30px;
+        }
+
+        h2 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2::before {
+            content: '';
+            width: 6px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #e5e7eb;
+            margin: 28px 0 12px 0;
+        }
+
+        h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 16px 0 8px 0;
+        }
+
+        p {
+            color: #d1d5db;
+            margin-bottom: 16px;
+            font-size: 15.5px;
+        }
+
+        ul, ol {
+            margin-left: 24px;
+            margin-bottom: 20px;
+            color: #d1d5db;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Cards & Grids */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin: 24px 0;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-highlight);
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 16px;
+            color: var(--accent);
+        }
+
+        .card h4 {
+            color: #fff;
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 14.5px;
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+
+        /* Callouts / Alerts */
+        .callout {
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin: 20px 0;
+            border-left: 4px solid;
+            background: var(--bg-card);
+            font-size: 15px;
+        }
+
+        .callout-info {
+            border-color: var(--accent);
+            background: rgba(6, 182, 212, 0.08);
+        }
+
+        .callout-success {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .callout-warning {
+            border-color: var(--warning);
+            background: rgba(245, 158, 11, 0.08);
+        }
+
+        .callout-danger {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .callout-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .callout-info .callout-title { color: var(--accent); }
+        .callout-success .callout-title { color: var(--success); }
+        .callout-warning .callout-title { color: var(--warning); }
+        .callout-danger .callout-title { color: var(--danger); }
+
+        /* Code Blocks */
+        .code-container {
+            background-color: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-code);
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-highlight);
+            color: #d1d5db;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            font-family: var(--font-code);
+            font-size: 13.5px;
+            color: #e5e7eb;
+            line-height: 1.6;
+        }
+
+        code {
+            font-family: var(--font-code);
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        /* Tables */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14.5px;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgba(255, 255, 255, 0.04);
+            color: #fff;
+            padding: 14px 16px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: #d1d5db;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Visual Step Box */
+        .step-box {
+            position: relative;
+            padding-left: 48px;
+            margin-bottom: 30px;
+        }
+
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 34px;
+            height: 34px;
+            background: var(--primary);
+            color: #fff;
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
+        }
+
+        .step-box::before {
+            content: '';
+            position: absolute;
+            left: 16px;
+            top: 40px;
+            bottom: -20px;
+            width: 2px;
+            background: var(--border-highlight);
+        }
+
+        .step-box:last-child::before {
+            display: none;
+        }
+
+        /* Workflow Flowchart Box */
+        .workflow-diagram {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+        }
+
+        .flow-step-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .flow-node {
+            flex: 1;
+            min-width: 180px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+
+        .flow-node.active {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .flow-arrow {
+            color: var(--accent);
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Mobile Hamburger */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 52px;
+            height: 52px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+
+        @media (max-width: 1024px) {
+            .doc-sidebar {
+                transform: translateX(-100%);
+            }
+            .doc-sidebar.open {
+                transform: translateX(0);
+            }
+            .doc-main {
+                margin-left: 0;
+                padding: 30px 20px;
+            }
+            .mobile-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle Menu">☰</button>
+
+    <div class="doc-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="doc-sidebar" id="docSidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo">OF</div>
+                <div class="brand-text">
+                    <h1>OmniFlow SaaS</h1>
+                    <span>Enterprise Docs</span>
+                </div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="docSearch" placeholder="ডকুমেন্টেশনে সার্চ করুন..." onkeyup="filterDocs()">
+            </div>
+
+            <ul class="nav-links">
+                <div class="nav-group-title">ভূমিকা ও পরিচিতি</div>
+                <li><a href="#overview" class="active">১. প্রজেক্ট পরিচিতি (Overview)</a></li>
+                <li><a href="#features">২. ফিচার ও মডিউলসমূহ</a></li>
+                <li><a href="#workflow">৩. কাজের ধাপ ও ওয়ার্কফ্লো</a></li>
+                <li><a href="#tech-stack">৪. টেকনোলজি স্ট্যাক</a></li>
+                <li><a href="#project-structure">৫. ফাইল ও ফোল্ডার স্ট্রাকচার</a></li>
+
+                <div class="nav-group-title">সেটআপ ও কনফিগারেশন</div>
+                <li><a href="#local-setup">৬. লোকাল ইনস্টলেশন ও সেটআপ</a></li>
+                <li><a href="#env-config">৭. এনভায়রনমেন্ট ভ্যারিয়েবল (.env)</a></li>
+                <li><a href="#database-setup">৮. ডেটাবেজ কনফিগারেশন</a></li>
+
+                <div class="nav-group-title">লাইভ ডিপ্লয়মেন্ট (cPanel & VPS)</div>
+                <li><a href="#cpanel-deployment">৯. cPanel লাইভ ডিপ্লয়মেন্ট <span class="nav-badge">গুরুত্বপূর্ণ</span></a></li>
+                <li><a href="#domain-ssl">১০. ডোমেইন ও SSL কনফিগারেশন</a></li>
+                <li><a href="#cron-jobs">১১. ব্যাকগ্রাউন্ড প্রসেস ও Cron Jobs</a></li>
+
+                <div class="nav-group-title">অ্যাডমিন ও ইউজার গাইড</div>
+                <li><a href="#super-admin-guide">১২. সুপার-অ্যাডমিন প্যানেল গাইড</a></li>
+                <li><a href="#user-dashboard-guide">১৩. বিজনেস ড্যাশবোর্ড ও ইউজার গাইড</a></li>
+
+                <div class="nav-group-title">রক্ষণাবেক্ষণ ও ক্লায়েন্ট গাইড</div>
+                <li><a href="#security-backup">১৪. নিরাপত্তা ও ব্যাকআপ পলিসি</a></li>
+                <li><a href="#troubleshooting">১৫. সাধারণ সমস্যা ও সমাধান</a></li>
+                <li><a href="#client-presentation">১৬. কাস্টমার/ইউজার প্রেজেন্টেশন গাইড</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="doc-main">
+            <!-- Header Banner -->
+            <div class="doc-header-banner">
+                <div class="header-title-badge">🚀 Commercial-Grade Production Documentation</div>
+                <h1>OmniFlow — মাল্টি-টেন্যান্ট AI বিজনেস অটোমেশন SaaS</h1>
+                <p>ফেসবুক মেসেঞ্জার, ইনস্টাগ্রাম ও হোয়াটসঅ্যাপ ইউনিফাইড ইনবক্স, অটোনোমাস মাল্টিমোডাল এআই এজেন্ট (GPT-4o + Vision + Whisper), পূর্ণাঙ্গ ই-কমার্স অর্ডার ম্যানেজমেন্ট, দেশীয় ও আন্তর্জাতিক পেমেন্ট গেটওয়ে (bKash, Nagad, SSLCommerz, Stripe) এবং কুরিয়ার অটোমেশন (Steadfast, Pathao) সমৃদ্ধ স্বয়ংসম্পূর্ণ প্ল্যাটফর্ম।</p>
+                
+                <div class="banner-meta">
+                    <div class="banner-meta-item">📦 <strong>ভার্সন:</strong> v1.0.0 (Production Stable)</div>
+                    <div class="banner-meta-item">📅 <strong>সর্বশেষ আপডেট:</strong> ৩১ অক্টোবর, ২০২৬</div>
+                    <div class="banner-meta-item">🛡️ <strong>সিকিউরিটি:</strong> AES-256-GCM + RBAC Isolated</div>
+                    <div class="banner-meta-item">🌐 <strong>আর্কিটেকচার:</strong> NestJS 10 + Next.js 15 Standalone</div>
+                </div>
+            </div>
+
+            <!-- SECTION 1: Project Overview -->
+            <section id="overview">
+                <h2>১. প্রজেক্ট পরিচিতি (Project Overview)</h2>
+                <p><strong>OmniFlow</strong> হলো একটি অত্যন্ত আধুনিক, সম্পূর্ণ সুরক্ষিত এবং মাল্টি-টেন্যান্ট এন্টারপ্রাইজ SaaS (Software-as-a-Service) প্ল্যাটফর্ম। এটি বিশেষ করে বাংলাদেশ ও আন্তর্জাতিক বাজারের যেকোনো সাইজের ই-কমার্স ব্র্যান্ড, রিটেল শপ, অনলাইন সেলার এবং কাস্টমার সার্ভিস ব্যবসাকে পুরোপুরি অটোমেটেড করার লক্ষ্যে তৈরি করা হয়েছে।</p>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-icon">🎯</div>
+                        <h4>কেন এটি তৈরি করা হয়েছে?</h4>
+                        <p>বর্তমানে ব্যবসায়ীদের আলাদা আলাদাভাবে ফেসবুক পেজ, ইনস্টাগ্রাম এবং হোয়াটসঅ্যাপে কাস্টমারের সাথে কথা বলতে হয়। রাতে বা ছুটির দিনে কাস্টমার মেসেজ দিলে তাৎক্ষণিক রিপ্লাই দেওয়া সম্ভব হয় না, ফলে বহু সেলস হাতছাড়া হয়ে যায়। এছাড়া আলাদাভাবে স্টক ম্যানেজমেন্ট, ক্যাশ-অন-ডেলিভারি অর্ডার নেওয়া, বিকাশ/নগদে টাকা মেলানো এবং পাঠাও/স্টেডফাস্টে কুরিয়ার এন্ট্রি করতে প্রচুর লোকবল ও সময় নষ্ট হয়।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">⚡</div>
+                        <h4>OmniFlow কীভাবে কাজ করে?</h4>
+                        <p>OmniFlow সব মেসেজিং চ্যানেলকে একটি মাত্র স্ক্রিনে যুক্ত করে। এর ভেতরে থাকা <strong>স্বয়ংক্রিয় এআই এজেন্ট (GPT-4o)</strong> কাস্টমারের টেক্সট মেসেজের পাশাপাশি পণ্যের ছবি ও ভয়েস নোট শুনে রিয়েল-টাইমে সঠিক উত্তর দেয়, স্টক চেক করে অর্ডার কনফার্ম করে, বিকাশ/নগদে পেমেন্ট লিংক পাঠায় এবং সরাসরি স্টেডফাস্ট/পাঠাও কুরিয়ারে পার্সেল বুকিং করে ইনভয়েস তৈরি করে দেয়।</p>
+                    </div>
+                </div>
+
+                <div class="callout callout-success">
+                    <div class="callout-title">💡 বিজনেসের জন্য মূল সুবিধা (Key Value Proposition)</div>
+                    <ul>
+                        <li><strong>২৪/৭ স্বয়ংক্রিয় সেলস:</strong> গভীর রাতে বা ছুটির দিনেও কোনো কাস্টমার মিস হয় না, ০ সেকেন্ডে নির্ভুল সেলস কনভার্সন।</li>
+                        <li><strong>৮০% মানবীয় খরচ সাশ্রয়:</strong> ৫-১০ জন চ্যাট এজেন্টের কাজ একা একটি বুদ্ধিমান এআই এজেন্ট নির্ভুলভাবে করে।</li>
+                        <li><strong>জিরো ডেটা লিক (সম্পূর্ণ টেন্যান্ট আইসোলেশন):</strong> এক দোকানের প্রোডাক্ট, কাস্টমার বা সেলস ডেটা কখনোই অন্য দোকান দেখতে পারে না।</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Features & Modules -->
+            <section id="features">
+                <h2>২. ফিচার ও মডিউলসমূহের বিস্তারিত বিবরণ</h2>
+                <p>OmniFlow-এর প্রতিটি মডিউল বাস্তব ব্যবসায়িক অভিজ্ঞতা ও আধুনিক ফ্রেমওয়ার্কের ওপর ভিত্তি করে তৈরি:</p>
+
+                <div class="grid-3">
+                    <div class="card">
+                        <div class="card-icon">💬</div>
+                        <h4>১. ইউনিফাইড ৩-প্যানেল ইনবক্স</h4>
+                        <p>ফেসবুক পেজ, ইনস্টাগ্রাম ডিএম এবং হোয়াটসঅ্যাপ ক্লাউড এপিআই একই ইনবক্সে আসে। লাইভ চ্যাট, আনরেড ফিল্টার, এজেন্ট অ্যাসাইনমেন্ট এবং ট্যাগিং সুবিধা।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🤖</div>
+                        <h4>২. মাল্টিমোডাল এআই এজেন্ট</h4>
+                        <p>বাংলা, ইংলিশ ও বাংলিশে সাবলীল কথোপকথন। কাস্টমার ছবি পাঠালে <strong>Computer Vision</strong> দিয়ে পণ্যের নাম ও দাম চিনে ফেলে এবং অডিও ভয়েস নোট ট্রান্সক্রাইব করে উত্তর দেয়।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📚</div>
+                        <h4>৩. RAG নলেজ বেস</h4>
+                        <p>দোকানের নিজস্ব পিডিএফ ক্যাটালগ, নির্দেশিকা, এফএকিউ (FAQ) বা ওয়েবসাইটের লিঙ্ক আপলোড করলেই এআই তা পড়ে মুখস্থ করে সেই অনুযায়ী কাস্টমারকে সঠিক তথ্য দেয়।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🛍️</div>
+                        <h4>৪. প্রোডাক্ট ও ইনভেন্টরি</h4>
+                        <p>সাইজ, কালার ও ভ্যারিয়েন্টসহ আনলিমিটেড প্রোডাক্ট যুক্ত করা, রিয়েল-টাইম স্টক ট্র্যাকিং, লো-স্টক অ্যালার্ট এবং সিএসভি (CSV) বাল্ক ইমপোর্ট/এক্সপোর্ট।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📦</div>
+                        <h4>৫. অর্ডার ও ইনভয়েস ইঞ্জিন</h4>
+                        <p>চ্যাট থেকেই সরাসরি অর্ডার প্লেসমেন্ট, ডেলিভারি চার্জ ক্যালকুলেশন, কুপন ডিসকাউন্ট, অটোমেটিক স্টক হ্রাস এবং প্রিন্টযোগ্য থার্মাল ও পিডিএফ রসিদ।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">👥</div>
+                        <h4>৬. কাস্টমার CRM ও লিড পাইপলাইন</h4>
+                        <p>৩৬০° কাস্টমার প্রোফাইল, মোট লাইফটাইম স্পেন্ডিং, ড্র্যাগ-অ্যান্ড-ড্রপ কানবান (Kanban) লিড পাইপলাইন (New, Contacted, Qualified, Won, Lost)।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💳</div>
+                        <h4>৭. বিকাশ, নগদ, SSL & Stripe</h4>
+                        <p>বিকাশ টোকেনাইজড পেমেন্ট (bKash v1.2), নগদ পিজি ডিরেক্ট, SSLCommerz এবং আন্তর্জাতিক কার্ডের জন্য Stripe ইন্টিগ্রেশন।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🚚</div>
+                        <h4>৮. স্টেডফাস্ট ও পাঠাও কুরিয়ার</h4>
+                        <p>১-ক্লিকে কুরিয়ারে পার্সেল বুকিং, কনসাইনমেন্ট ট্র্যাকিং কোড জেনারেশন এবং অটোমেটিক ডেলিভারি স্ট্যাটাস সিঙ্ক।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🔀</div>
+                        <h4>৯. ভিজ্যুয়াল অটোমেশন বিল্ডার</h4>
+                        <p>নো-কোড নোড বিল্ডার। নির্দিষ্ট শব্দে স্বয়ংক্রিয় মেসেজ পাঠানো, অর্ডার হলে নোটিফিকেশন পাঠানো এবং কাস্টমার ইনঅ্যাক্টিভ থাকলে ফলো-আপ মেসেজ পাঠানো।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💰</div>
+                        <h4>১০. ক্রেডিট ওয়ালেট ও বিলিং</h4>
+                        <p>প্রতিটি টোকেন ও এআই ব্যবহারের সঠিক হিসাব, ব্যালেন্স রিচার্জ, ব্যবহারের মাসিক লিমিট এবং ইনভয়েস হিস্ট্রি।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">👑</div>
+                        <h4>১১. সুপার-অ্যাডমিন কনসোল</h4>
+                        <p>প্ল্যাটফর্ম ওনারের জন্য আলাদা কনসোল (<code>/admin</code>)। সব টেন্যান্ট মনিটরিং, লাইভ হেলথ চেক, ক্রেডিট অ্যাডজাস্টমেন্ট এবং ইউজার সেশন নিয়ন্ত্রণ।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🛡️</div>
+                        <h4>১২. ৬-লেয়ার সিকিউরিটি ও RBAC</h4>
+                        <p>Owner, Admin, Manager, Sales Agent, Support Agent, Viewer — প্রতিটি রোলের জন্য সার্ভার সাইডে কঠোর পারমিশন নিয়ন্ত্রণ।</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Project Workflow -->
+            <section id="workflow">
+                <h2>৩. প্রজেক্টের সম্পূর্ণ কার্যপদ্ধতি (End-to-End Workflow)</h2>
+                <p>নিচে কাস্টমারের প্রথম মেসেজ দেওয়া থেকে শুরু করে পার্সেল ডেলিভারি হওয়া পর্যন্ত সম্পূর্ণ জীবনচক্র (Lifecycle) চিত্রিত করা হলো:</p>
+
+                <div class="workflow-diagram">
+                    <div class="flow-step-row">
+                        <div class="flow-node active">
+                            <strong>১. কাস্টমার মেসেজ</strong>
+                            <div>মেসেঞ্জার / হোয়াটসঅ্যাপ / আইজি</div>
+                        </div>
+                        <div class="flow-arrow">➔</div>
+                        <div class="flow-node">
+                            <strong>২. মেটা ওয়েবহুক রিসিপশন</strong>
+                            <div>NestJS তাৎক্ষণিক 200 OK দেয়</div>
+                        </div>
+                        <div class="flow-arrow">➔</div>
+                        <div class="flow-node">
+                            <strong>৩. ব্যাকগ্রাউন্ড কিউ (BullMQ)</strong>
+                            <div>Redis-এ প্রসেসিং অফলোড হয়</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step-row">
+                        <div class="flow-node active">
+                            <strong>৪. এআই ও আরএজি প্রসেসিং</strong>
+                            <div>ছবি/টেক্সট/নলেজবেস অ্যানালাইসিস</div>
+                        </div>
+                        <div class="flow-arrow">➔</div>
+                        <div class="flow-node">
+                            <strong>৫. অটো রিপ্লাই প্রদান</strong>
+                            <div>০.৮ সেকেন্ডে কাস্টমারকে উত্তর</div>
+                        </div>
+                        <div class="flow-arrow">➔</div>
+                        <div class="flow-node">
+                            <strong>৬. সেলস কোয়ালিফিকেশন</strong>
+                            <div>প্রোডাক্ট পছন্দ ও ঠিকানা সংগ্রহ</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step-row">
+                        <div class="flow-node active">
+                            <strong>৭. অর্ডার তৈরি ও ইনভয়েস</strong>
+                            <div>স্টক কমে যায়, ইনভয়েস জেনারেট</div>
+                        </div>
+                        <div class="flow-arrow">➔</div>
+                        <div class="flow-node">
+                            <strong>৮. বিকাশ / নগদ লিংক বা COD</strong>
+                            <div>পেমেন্ট ভেরিফিকেশন সম্পন্ন</div>
+                        </div>
+                        <div class="flow-arrow">➔</div>
+                        <div class="flow-node">
+                            <strong>৯. স্টেডফাস্ট/পাঠাও বুকিং</strong>
+                            <div>স্বয়ংক্রিয় ট্র্যাকিং কোড প্রদান</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>হিউম্যান হ্যান্ডওভার প্রোটোকল (AI to Human Switch)</h3>
+                <p>কোনো কাস্টমার যদি মানুষের সাথে কথা বলতে চায় বা এআই উত্তর দিতে অসমর্থ হয়, তখন সাথে সাথে <strong>Human Handover Mode</strong> সক্রিয় হয়:</p>
+                <ul>
+                    <li>এআই সাময়িকভাবে উক্ত কনভার্সনে অটোমেটিক উত্তর দেওয়া বন্ধ রাখে।</li>
+                    <li>ইনবক্সে "Needs Human Attention" নোটিফিকেশন বাজে।</li>
+                    <li>স্টাফ চ্যাটে জয়েন করে মেসেজের উত্তর দেয় এবং অভ্যন্তরীণ নোট (Internal Staff Note) লিখতে পারে।</li>
+                    <li>কথোপকথন শেষ হলে স্টাফ ১-ক্লিকে আবার <strong>Return to AI</strong> বাটনে চাপ দিয়ে এআই চালু করে দিতে পারে।</li>
+                </ul>
+            </section>
+
+            <!-- SECTION 4: Technology Stack -->
+            <section id="tech-stack">
+                <h2>৪. টেকনোলজি স্ট্যাক (Technology Stack)</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>লেয়ার / ডোমেইন</th>
+                                <th>ব্যবহৃত প্রযুক্তি</th>
+                                <th>ভার্সন</th>
+                                <th>কেন ব্যবহার করা হয়েছে?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Frontend Client</strong></td>
+                                <td>Next.js (App Router), React, Tailwind CSS</td>
+                                <td>Next 15.1, React 19</td>
+                                <td>অসাধারণ গতি, এসইও ফ্রেন্ডলি মার্কেটিং পেজ এবং প্রি-রেন্ডার করা ৩৩টি ড্যাশবোর্ড স্ক্রিন।</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Backend REST & WS</strong></td>
+                                <td>NestJS, TypeScript, Socket.IO</td>
+                                <td>NestJS 10.4, TS 5.7</td>
+                                <td>এন্টারপ্রাইজ মডুলার আর্কিটেকচার, রিয়েল-টাইম বাই-ডিরেকশনাল লাইভ চ্যাট।</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Database & ORM</strong></td>
+                                <td>MySQL 8.0 / PostgreSQL, Prisma ORM</td>
+                                <td>MySQL 8.0, Prisma 5.22</td>
+                                <td>টাইপ-সেফ কুয়েরি, কঠোর রিলেশনাল কনস্ট্রেইন্ট এবং আল্ট্রা-ফাস্ট ইনডেক্সিং।</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Background Queues</strong></td>
+                                <td>BullMQ, Redis 7 (In-Memory)</td>
+                                <td>BullMQ 5.x, Redis 7 Alpine</td>
+                                <td>ওয়েবহুক প্রসেসিং, এআই কল ও এসএমএস ব্যাকগ্রাউন্ডে হ্যান্ডেল করার জন্য।</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Artificial Intelligence</strong></td>
+                                <td>OpenAI GPT-4o, Whisper STT, Text-Embedding-3</td>
+                                <td>Latest Official APIs</td>
+                                <td>বুদ্ধিমান কথোপকথন, ইমেজ রিকগনিশন, ভয়েস ট্রান্সক্রিপশন ও ভেক্টর সার্চ।</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Object Storage</strong></td>
+                                <td>MinIO / AWS S3 Compatible Storage</td>
+                                <td>RELEASE.2024</td>
+                                <td>ডকুমেন্ট, প্রোডাক্ট ফটো ও ভয়েস অডিও এনক্রিপ্টেড অবস্থায় স্টোর করার জন্য।</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reverse Proxy & SSL</strong></td>
+                                <td>Nginx Alpine, Let's Encrypt Certbot</td>
+                                <td>Nginx 1.25</td>
+                                <td>SSL টার্মিনেশন, রেট লিমিটিং এবং সিকিউরিটি হেডার প্রয়োগ।</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 5: Project Structure -->
+            <section id="project-structure">
+                <h2>৫. ফাইল ও ফোল্ডার স্ট্রাকচার (Project Structure)</h2>
+                <p>প্রজেক্টটি একটি আধুনিক <code>pnpm</code> মনোরেপো (Monorepo) হিসেবে সাজানো, যাতে কোড রিইউজেবিলিটি এবং আর্কিটেকচারাল সেপারেশন শতভাগ বজায় থাকে:</p>
+
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Directory Map: /Social_Automation_saas</span>
+                    </div>
+                    <pre><code>├── apps/
+│   ├── web/                     # Next.js 15 ফ্রন্টএন্ড (মার্কেটিং পেজ, ড্যাশবোর্ড, ইনবক্স, অ্যাডমিন)
+│   │   ├── app/                 # App Router ডিরেক্টরি (৩৩টি রাউট)
+│   │   │   ├── (admin)/admin/   # সুপার অ্যাডমিন প্যানেল
+│   │   │   ├── (auth)/          # লগইন, রেজিস্টার, ভেরিফিকেশন, অনবোর্ডিং
+│   │   │   └── (dashboard)/     # ইনবক্স, প্রোডাক্ট, অর্ডার, লিডস, অটোমেশন ইত্যাদি
+│   │   ├── components/          # ক্লায়েন্ট কম্পোনেন্টস
+│   │   └── lib/                 # Auth Context, API Client, Helper ফাংশন
+│   ├── api/                     # NestJS 10 ব্যাকএন্ড API এবং WebSocket গেটওয়ে
+│   │   ├── src/
+│   │   │   ├── auth/            # JWT অথেন্টিকেশন ও রিফ্রেশ টোকেন হ্যান্ডলার
+│   │   │   ├── inbox/           # লাইভ মেসেজিং কন্ট্রোলার ও Socket.IO গেটওয়ে
+│   │   │   ├── ai-agent/        # এআই এজেন্ট ও প্রম্পট ইঞ্জিন
+│   │   │   ├── knowledge/       # RAG ভেক্টর সার্চ ও ফাইল আপলোড
+│   │   │   ├── orders/          # অর্ডার প্লেসমেন্ট ও ইনভয়েস লজিক
+│   │   │   ├── products/        # প্রোডাক্ট ও স্টক ট্রানজ্যাকশন
+│   │   │   ├── payments/        # বিকাশ, নগদ, এসএসএল ও স্ট্রাইপ হ্যান্ডলার
+│   │   │   ├── couriers/        # স্টেডফাস্ট ও পাঠাও ইন্টিগ্রেশন
+│   │   │   ├── workflows/       # অটোমেশন নোড এক্সিকিউশন ইঞ্জিন
+│   │   │   ├── super-admin/     # সুপার অ্যাডমিন গভর্ন্যান্স কন্ট্রোলার
+│   │   │   ├── health/          # সিস্টেম হেলথ চেক কন্ট্রোলার (/api/v1/health)
+│   │   │   └── common/          # Guards (TenantGuard, RolesGuard), Decorators, Filters
+│   └── worker/                  # BullMQ ব্যাকগ্রাউন্ড কিউ প্রসেসর
+│       └── src/
+│           ├── processors/      # AI মেসেজ জেনারেশন, কুরিয়ার সিঙ্ক, ফলো-আপ প্রসেসর
+│           └── index.ts         # Worker বুটস্ট্র্যাপ ফাইল
+├── packages/
+│   ├── database/                # Prisma ORM স্কিমা, মাইগ্রেশন ফাইল ও রিপোজিটরি
+│   │   └── prisma/schema.prisma # মূল ডেটাবেজ স্কিমা (৪০+ মডেল)
+│   ├── shared/                  # শেয়ার্ড টাইপস্ক্রিপ্ট ইন্টারফেস, Zod স্কিমা ও ভ্যালিডেশন
+│   ├── integrations/            # বিকাশ, নগদ, মেটা, হোয়াটসঅ্যাপ, স্টেডফাস্ট ক্লায়েন্ট SDK
+│   │   └── src/encryption.service.ts # AES-256-GCM সিক্রেট এনক্রিপশন
+│   └── ui/                      # শেয়ার্ড রিয়্যাক্ট প্রেজেন্টেশনাল কম্পোনেন্টস
+├── docker/                      # Nginx রিভার্স প্রক্সি কনফিগ ও MySQL init স্ক্রিপ্ট
+├── .github/workflows/           # CI/CD গিটহাব অ্যাকশনস (ci.yml, deploy.yml)
+├── docker-compose.prod.yml      # প্রোডাকশন ডকার কম্পোজ অর্কেস্ট্রেশন
+├── documents.html               # এই স্বয়ংসম্পূর্ণ প্রজেক্ট ডকুমেন্টেশন ফাইল
+└── .env.example                 # প্রয়োজনীয় এনভায়রনমেন্ট ভ্যারিয়েবলের নমুনা তালিকা</code></pre>
+                </div>
+            </section>
+
+            <!-- SECTION 6: Local Setup -->
+            <section id="local-setup">
+                <h2>৬. লোকাল সার্ভারে ইনস্টলেশন ও সেটআপ (Local Setup)</h2>
+                <p>লোকাল মেশিনে প্রজেক্টটি চালু করার জন্য নিচের ধাপগুলো অনুসরণ করুন:</p>
+
+                <div class="step-box">
+                    <div class="step-number">১</div>
+                    <h4>প্রয়োজনীয় সফটওয়্যার ইনস্টল করুন</h4>
+                    <ul>
+                        <li><strong>Node.js:</strong> v20.x LTS (Node 20 বা 20.12+ ব্যবহার করুন)।</li>
+                        <li><strong>pnpm:</strong> v12.16.1 (কমান্ড: <code>corepack enable && corepack prepare pnpm@12.16.1 --activate</code>)।</li>
+                        <li><strong>Docker Desktop:</strong> MySQL, Redis এবং MinIO কন্টেইনার চালানোর জন্য।</li>
+                    </ul>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">২</div>
+                    <h4>প্রজেক্ট ডিপেন্ডেন্সি ইনস্টল করুন</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Bash</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code># ১. ডিপেন্ডেন্সি প্যাকেজ ইনস্টল করুন
+pnpm install
+
+# ২. লোকাল ডকার কন্টেইনারগুলো ব্যাকগ্রাউন্ডে চালু করুন
+docker compose -f docker/docker-compose.yml up -d</code></pre>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">৩</div>
+                    <h4>এনভায়রনমেন্ট ফাইল প্রস্তুত করুন</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Bash</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code># .env.example থেকে মূল .env তৈরি করুন
+cp .env.example .env</code></pre>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">৪</div>
+                    <h4>ডেটাবেজ স্কিমা পুশ ও প্রিজমা ক্লায়েন্ট তৈরি</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Bash</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code># ডেটাবেজ টেবিল পুশ করুন
+pnpm --filter @omniflow/database prisma db push
+
+# প্রিজমা টাইপ ক্লায়েন্ট জেনারেট করুন
+pnpm --filter @omniflow/database prisma generate</code></pre>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">৫</div>
+                    <h4>ডেভেলপমেন্ট সার্ভার রান করুন</h4>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Bash</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code># একসাথে সবগুলো সার্ভিস চালু করতে:
+pnpm dev
+
+# অথবা আলাদা টার্মিনালে চালু করতে পারেন:
+# Terminal 1 (API): pnpm --filter @omniflow/api start:dev
+# Terminal 2 (Worker): pnpm --filter @omniflow/worker start:dev
+# Terminal 3 (Web): pnpm --filter @omniflow/web dev</code></pre>
+                    </div>
+                    <p>সার্ভার চালু হলে ব্রাউজারে প্রবেশ করুন: <code>http://localhost:3000</code></p>
+                </div>
+            </section>
+
+            <!-- SECTION 7: Environment Configuration -->
+            <section id="env-config">
+                <h2>৭. এনভায়রনমেন্ট ভ্যারিয়েবল কনফিগারেশন (.env)</h2>
+                <p>নিচের সারণীতে <code>.env</code> ফাইলের প্রতিটি ভ্যারিয়েবলের অর্থ এবং সঠিক কনফিগারেশন মান দেওয়া হলো:</p>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ভ্যারিয়েবল নাম</th>
+                                <th>প্রয়োজনীয়তা</th>
+                                <th>উদাহরণ বা ডিফল্ট মান</th>
+                                <th>বিবরণ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>NODE_ENV</code></td>
+                                <td>আবশ্যক</td>
+                                <td><code>production</code> বা <code>development</code></td>
+                                <td>অ্যাপ্লিকেশনের রানটাইম মোড।</td>
+                            </tr>
+                            <tr>
+                                <td><code>DATABASE_URL</code></td>
+                                <td>আবশ্যক</td>
+                                <td><code>mysql://user:pass@localhost:3306/db?connection_limit=25</code></td>
+                                <td>ডেটাবেজ কানেকশন স্ট্রিং।</td>
+                            </tr>
+                            <tr>
+                                <td><code>JWT_SECRET</code></td>
+                                <td>আবশ্যক (Critical)</td>
+                                <td>৬৪ অক্ষরের র‍্যান্ডম হেক্স স্ট্রিং</td>
+                                <td>লগইন টোকেন সাইন করার জন্য সিক্রেট কি।</td>
+                            </tr>
+                            <tr>
+                                <td><code>JWT_REFRESH_SECRET</code></td>
+                                <td>আবশ্যক (Critical)</td>
+                                <td>৬৪ অক্ষরের র‍্যান্ডম হেক্স স্ট্রিং</td>
+                                <td>লং-টার্ম রিফ্রেশ টোকেন ভ্যালিডেশনের জন্য কি।</td>
+                            </tr>
+                            <tr>
+                                <td><code>TOKEN_ENCRYPTION_KEY</code></td>
+                                <td>আবশ্যক (Critical)</td>
+                                <td>৬৪ অক্ষরের হেক্স কি (৩২ বাইট AES-256)</td>
+                                <td>বিকাশ/মেটার পাসওয়ার্ড ডেটাবেজে এনক্রিপ্ট করার জন্য।</td>
+                            </tr>
+                            <tr>
+                                <td><code>REDIS_HOST</code> / <code>REDIS_PORT</code></td>
+                                <td>আবশ্যক</td>
+                                <td><code>localhost</code> / <code>6379</code></td>
+                                <td>রেডিস সার্ভারের হোস্ট ও পোর্ট।</td>
+                            </tr>
+                            <tr>
+                                <td><code>OPENAI_API_KEY</code></td>
+                                <td>ঐচ্ছিক / AI এর জন্য</td>
+                                <td><code>sk-proj-xxxx...</code></td>
+                                <td>OpenAI প্ল্যাটফর্ম এপিআই কি।</td>
+                            </tr>
+                            <tr>
+                                <td><code>BKASH_APP_KEY</code> / <code>SECRET</code></td>
+                                <td>পেমেন্টের জন্য</td>
+                                <td>বিকাশ পোর্টাল থেকে প্রাপ্ত কি</td>
+                                <td>বিকাশ টোকেনাইজড পেমেন্ট প্রসেসিংয়ের জন্য।</td>
+                            </tr>
+                            <tr>
+                                <td><code>STEADFAST_API_KEY</code></td>
+                                <td>কুরিয়ারের জন্য</td>
+                                <td>স্টেডফাস্ট ড্যাশবোর্ড থেকে প্রাপ্ত কি</td>
+                                <td>পার্সেল বুকিংয়ের জন্য এপিআই কি।</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="callout callout-danger">
+                    <div class="callout-title">⚠️ সতর্কবার্তা (Security Alert)</div>
+                    <p>কখনোই প্রোডাকশন সার্ভারে ডিফল্ট পাসওয়ার্ড রাখবেন না। লিনাক্স বা ম্যাক টার্মিনালে <code>openssl rand -hex 32</code> কমান্ড চালিয়ে শক্তিশালী ৬৪-অক্ষরের ক্রিপ্টোগ্রাফিক কি তৈরি করে <code>JWT_SECRET</code> ও <code>TOKEN_ENCRYPTION_KEY</code>-তে ব্যবহার করুন।</p>
+                </div>
+            </section>
+
+            <!-- SECTION 8: Database Configuration -->
+            <section id="database-setup">
+                <h2>৮. ডেটাবেজ কনফিগারেশন ও মাইগ্রেশন</h2>
+                <p>OmniFlow প্রজেক্টটি MySQL 8.0 এবং PostgreSQL 16 (pgvector সহ) উভয় ডেটাবেজেই নির্বিঘ্নে চলতে সক্ষম। ডিফল্টভাবে এতে উচ্চ পারফরম্যান্সের <strong>MySQL 8.0 (utf8mb4_unicode_ci)</strong> সাজানো আছে।</p>
+
+                <h3>টেবিল ও ডেটাবেজ তৈরি:</h3>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>SQL Command (MySQL)</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>CREATE DATABASE IF NOT EXISTS `omniflow_db` 
+CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER IF NOT EXISTS 'omniflow_user'@'localhost' IDENTIFIED BY 'আপনার_শক্তিশালী_পাসওয়ার্ড';
+GRANT ALL PRIVILEGES ON `omniflow_db`.* TO 'omniflow_user'@'localhost';
+FLUSH PRIVILEGES;</code></pre>
+                </div>
+
+                <h3>প্রোডাকশন মাইগ্রেশন প্রয়োগ:</h3>
+                <p>প্রোডাকশনে কখনো ডেটা লস না হওয়ার জন্য সরাসরি <code>prisma migrate deploy</code> কমান্ড ব্যবহার করতে হবে:</p>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>Bash</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code># ডেটাবেজ স্কিমা মাইগ্রেশন প্রোডাকশনে অ্যাপ্লাই করুন
+pnpm --filter @omniflow/database prisma migrate deploy</code></pre>
+                </div>
+            </section>
+
+            <!-- SECTION 9: cPanel Live Deployment -->
+            <section id="cpanel-deployment">
+                <h2>৯. cPanel লাইভ ডিপ্লয়মেন্ট গাইড (Step-by-Step)</h2>
+                <p>সাধারণত এন্টারপ্রাইজ SaaS প্ল্যাটফর্মের ব্যাকগ্রাউন্ড কিউ (Redis ও BullMQ) এবং রিয়েল-টাইম WebSockets-এর জন্য ক্লাউড ভিপিএস (Ubuntu VPS) আদর্শ। তবে আপনি যদি সাধারণ <strong>cPanel Shared / Cloud Hosting (CloudLinux / cPanel Node.js App Support সহ)</strong>-এ ডিপ্লয় করতে চান, তবে নিচের নির্ভুল ও বিস্তারিত ধাপগুলো অনুসরণ করুন:</p>
+
+                <div class="callout callout-info">
+                    <div class="callout-title">📋 cPanel হোস্টিংয়ের পূর্বশর্ত (Prerequisites)</div>
+                    <ul>
+                        <li>cPanel-এ <strong>"Setup Node.js App"</strong> (Phusion Passenger) অপশন থাকতে হবে।</li>
+                        <li>Node.js ভার্সন হিসেবে <strong>v20.x</strong> সিলেক্ট করার সুবিধা থাকতে হবে।</li>
+                        <li>MySQL Database উইজার্ড ব্যবহারের পারমিশন থাকতে হবে।</li>
+                        <li>টার্মিনাল (SSH Access) অথবা cPanel Terminal চালু থাকতে হবে।</li>
+                    </ul>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">১</div>
+                    <h4>cPanel-এ ডেটাবেজ তৈরি করুন</h4>
+                    <ul>
+                        <li>cPanel-এ লগইন করে <strong>MySQL® Databases</strong>-এ যান।</li>
+                        <li>নতুন ডেটাবেজ তৈরি করুন, উদাহরণ: <code>yourcpanel_omniflow</code>।</li>
+                        <li>নতুন ডেটাবেজ ইউজার তৈরি করুন এবং শক্তিশালী পাসওয়ার্ড সেট করুন।</li>
+                        <li><strong>Add User To Database</strong> সেকশনে গিয়ে ইউজারের সাথে ডেটাবেজ যুক্ত করুন এবং <strong>ALL PRIVILEGES</strong> বক্সে টিক দিয়ে Save করুন।</li>
+                    </ul>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">২</div>
+                    <h4>লোকাল মেশিনে প্রোডাকশন বিল্ড তৈরি করুন</h4>
+                    <p>cPanel-এর সার্ভার মেমরি সীমিত হতে পারে, তাই ভারী বিল্ড প্রসেসটি নিজের লোকাল পিসিতে সম্পন্ন করে আপলোড করা সবচেয়ে নির্ভরযোগ্য ও দ্রুততম পদ্ধতি:</p>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>Local PC Terminal</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code># ১. লোকাল পিসিতে সম্পূর্ণ প্যাকেজ ক্লিন বিল্ড দিন
+pnpm run build
+
+# বিল্ড সফল হলে:
+# - apps/api/dist তৈরি হবে (ব্যাকএন্ড)
+# - apps/web/.next/standalone তৈরি হবে (ফ্রন্টএন্ড)</code></pre>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">৩</div>
+                    <h4>cPanel-এ Node.js অ্যাপ সেটআপ করুন</h4>
+                    <ul>
+                        <li>cPanel-এর সার্চবারে <strong>"Setup Node.js App"</strong> লিখে ক্লিক করুন।</li>
+                        <li><strong>Create Application</strong> বাটনে ক্লিক করুন।</li>
+                        <li><strong>Node.js Version:</strong> ড্রপডাউন থেকে <code>20.x</code> বেছে নিন।</li>
+                        <li><strong>Application Mode:</strong> <code>Production</code> সিলেক্ট করুন।</li>
+                        <li><strong>Application Root:</strong> <code>api</code> (অথবা আপনার পছন্দমতো ফোল্ডারের নাম)।</li>
+                        <li><strong>Application URL:</strong> <code>api.yourdomain.com</code> অথবা সাব-ডিরেক্টরি।</li>
+                        <li><strong>Application Startup File:</strong> <code>apps/api/dist/main.js</code></li>
+                        <li><strong>Create</strong> বাটনে ক্লিক করুন।</li>
+                    </ul>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">৪</div>
+                    <h4>ফাইল আপলোড ও ডিপ্লয়মেন্ট</h4>
+                    <ul>
+                        <li>cPanel <strong>File Manager</strong>-এ গিয়ে তৈরি হওয়া <code>api</code> ফোল্ডারে প্রবেশ করুন।</li>
+                        <li>আপনার প্রোজেক্টের <code>apps/api/dist</code>, <code>packages</code>, <code>package.json</code> এবং <code>node_modules</code> জিপ করে আপলোড করে Extract করুন।</li>
+                        <li>উক্ত ফোল্ডারে একটি <code>.env</code> ফাইল তৈরি করে আপনার লাইভ ডেটাবেজ ক্রেডেনশিয়াল ও সিক্রেট কি লিখে সেভ করুন।</li>
+                    </ul>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">৫</div>
+                    <h4>Next.js ফ্রন্টএন্ড সেটআপ (Static Export বা Second Node.js App)</h4>
+                    <p>Next.js ফ্রন্টএন্ডটি cPanel-এ চালানোর জন্য দুটি উপায় রয়েছে:</p>
+                    <p><strong>উপায় ক (রেকমেন্ডেড):</strong> cPanel-এ দ্বিতীয় আরেকটি Node.js অ্যাপ তৈরি করুন যার রুট হবে <code>public_html</code> এবং Startup File হবে <code>apps/web/.next/standalone/apps/web/server.js</code>।</p>
+                    <p><strong>উপায় খ (.htaccess রিভার্স প্রক্সি):</strong> যদি আপনার হোস্টিংয়ে Nginx বা Apache Reverse Proxy সাপোর্ট থাকে, তবে নিচের <code>.htaccess</code> কোডটি <code>public_html</code>-এ রেখে ট্রাফিক পোর্ট ৩০০০ ও ৪০০০-এ পাঠিয়ে দিন:</p>
+
+                    <div class="code-container">
+                        <div class="code-header">
+                            <span>public_html/.htaccess</span>
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code># OmniFlow cPanel Reverse Proxy .htaccess
+RewriteEngine On
+
+# ১. API রিকোয়েস্ট ব্যাকএন্ডে (Port 4000) পাঠান
+RewriteRule ^api/(.*)$ http://127.0.0.1:4000/api/$1 [P,L]
+
+# ২. WebSocket রিকোয়েস্ট ব্যাকএন্ডে পাঠান
+RewriteCond %{HTTP:Upgrade} websocket [NC]
+RewriteCond %{HTTP:Connection} upgrade [NC]
+RewriteRule ^socket.io/(.*)$ ws://127.0.0.1:4000/socket.io/$1 [P,L]
+
+# ৩. ফ্রন্টএন্ডের সমস্ত রিকোয়েস্ট Next.js অ্যাপে (Port 3000) পাঠান
+RewriteRule ^(.*)$ http://127.0.0.1:3000/$1 [P,L]</code></pre>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">৬</div>
+                    <h4>Node.js অ্যাপ রিস্টার্ট ও টেস্ট করুন</h4>
+                    <p>cPanel "Setup Node.js App"-এ গিয়ে <strong>Restart</strong> বাটনে চাপ দিন। এরপর ব্রাউজারে <code>https://yourdomain.com/api/v1/health</code> ভিজিট করে চেক করুন স্ট্যাটাস <code>"status": "ok"</code> দেখাচ্ছে কিনা।</p>
+                </div>
+            </section>
+
+            <!-- SECTION 10: Domain & SSL Setup -->
+            <section id="domain-ssl">
+                <h2>১০. ডোমেইন কানেক্ট ও SSL সেটআপ</h2>
+                <p>মেটা ওয়েবহুক ও বিকাশ পেমেন্টের জন্য ডোমেইনে ভ্যালিড HTTPS SSL সক্রিয় থাকা শতভাগ বাধ্যতামূলক:</p>
+
+                <h3>১. DNS A Record পয়েন্ট করা:</h3>
+                <p>আপনার ডোমেইন প্রভাইডারের (যেমন: Namecheap, GoDaddy বা Cloudflare) কন্ট্রোল প্যানেলে গিয়ে নিচের DNS রেকর্ড যুক্ত করুন:</p>
+                <ul>
+                    <li><code>A Record</code> ➔ <code>@</code> ➔ সার্ভারের পাবলিক আইপি (Server IP Address)</li>
+                    <li><code>CNAME Record</code> ➔ <code>www</code> ➔ <code>yourdomain.com</code></li>
+                </ul>
+
+                <h3>২. cPanel AutoSSL চালু করা:</h3>
+                <ol>
+                    <li>cPanel ড্যাশবোর্ডে গিয়ে <strong>SSL/TLS Status</strong>-এ ক্লিক করুন।</li>
+                    <li>আপনার মূল ডোমেইন সিলেক্ট করে <strong>Run AutoSSL</strong> বাটনে ক্লিক করুন।</li>
+                    <li>৩-৫ মিনিটের মধ্যে Let's Encrypt / cPanel AutoSSL সার্টিফিকেট স্বয়ংক্রিয়ভাবে ইনস্টল হয়ে যাবে।</li>
+                </ol>
+            </section>
+
+            <!-- SECTION 11: Cron Jobs -->
+            <section id="cron-jobs">
+                <h2>১১. ব্যাকগ্রাউন্ড প্রসেস ও Cron Jobs সেটআপ</h2>
+                <p>cPanel-এ ডেডিকেটেড ব্যাকগ্রাউন্ড সার্ভিস না থাকলে cPanel-এর <strong>Cron Jobs</strong> অপশন ব্যবহার করে ফলো-আপ ও কুরিয়ার ট্র্যাকিং অটোমেশন নিশ্চিত করতে হবে:</p>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>টাস্কের নাম</th>
+                                <th>সময় ব্যবধান (Interval)</th>
+                                <th>কমান্ড / স্ক্রিপ্ট</th>
+                                <th>কাজের উদ্দেশ্য</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>কুরিয়ার স্ট্যাটাস সিঙ্ক</strong></td>
+                                <td>প্রতি ১৫ মিনিট পর পর (<code>*/15 * * * *</code>)</td>
+                                <td><code>curl -s -X POST https://yourdomain.com/api/v1/couriers/sync</code></td>
+                                <td>স্টেডফাস্ট ও পাঠাও থেকে পার্সেল ডেলিভারি হলো কিনা তা চেক করা।</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ফলো-আপ মেসেজ পাঠানো</strong></td>
+                                <td>প্রতি ১ ঘণ্টা পর পর (<code>0 * * * *</code>)</td>
+                                <td><code>curl -s -X POST https://yourdomain.com/api/v1/workflows/cron/followups</code></td>
+                                <td>অসম্পূর্ণ চ্যাটে কাস্টমারকে স্বয়ংক্রিয় ফলো-আপ মেসেজ পাঠানো।</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ডেটাবেজ অটো ব্যাকআপ</strong></td>
+                                <td>প্রতিদিন রাত ২ টায় (<code>0 2 * * *</code>)</td>
+                                <td><code>/bin/bash /path/to/backup-script.sh</code></td>
+                                <td>সম্পূর্ণ ডেটাবেজের কম্প্রেসড ব্যাকআপ তৈরি করে সংরক্ষণ করা।</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 12: Super-Admin Guide -->
+            <section id="super-admin-guide">
+                <h2>১২. সুপার-অ্যাডমিন প্যানেল গাইড (Super-Admin Console)</h2>
+                <p>প্ল্যাটফর্মের মূল মালিক বা প্রভাইডারের জন্য <code>/admin</code> রাউটে সম্পূর্ণ আলাদা ও শক্তিশালী সুপার-অ্যাডমিন কনসোল তৈরি করা হয়েছে। সাধারণ দোকানদার বা টেন্যান্টরা কখনোই এই প্যানেলে ঢুকতে পারবে না।</p>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-icon">📊</div>
+                        <h4>প্ল্যাটফর্ম কেপিআই ও রেভিনিউ অ্যানালিটিক্স</h4>
+                        <p>মোট কতজন ইউজার রেজিস্টার করেছে, কতটি বিজনেস সক্রিয় রয়েছে, গত ৩০ দিনে কত মেসেজ আদান-প্রদান হয়েছে এবং এআই বাবদ কত খরচ হয়েছে বনাম কত টাকা লাভ হয়েছে তার লাইভ চার্ট।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🏢</div>
+                        <h4>টেন্যান্ট বা শপ ম্যানেজমেন্ট</h4>
+                        <p>যেকোনো বিজনেসের তথ্য দেখা, তাদের মেসেজ লিমিট বাড়ানো-কমানো, এবং কোনো দোকান নীতিমালা ভঙ্গ করলে ১-ক্লিকে তাদের শপ সাসপেন্ড (Suspend) বা আন-সাসপেন্ড করা।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💳</div>
+                        <h4>ক্রেডিট ওয়ালেট অ্যাডজাস্টমেন্ট</h4>
+                        <p>কোনো দোকান যদি ক্যাশ বা ব্যাংক ট্রানস্ফারে ক্রেডিট কিনতে চায়, সুপার-অ্যাডমিন তাদের অ্যাকাউন্টে সরাসরি ব্যালেন্স অ্যাড করে দিতে পারে এবং প্রতিটি ট্রানজ্যাকশনের অডিট হিস্ট্রি সংরক্ষিত থাকে।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🚨</div>
+                        <h4>ইমার্জেন্সি সেশন রিভোকেশন</h4>
+                        <p>নিরাপত্তাজনিত কারণে কোনো ইউজারের আইডি হ্যাকের শঙ্কা দেখা দিলে ১-ক্লিকে তার সব সেশন ও টোকেন রিভোক (লগআউট) করে দেওয়ার ক্ষমতা।</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 13: User Dashboard Guide -->
+            <section id="user-dashboard-guide">
+                <h2>১৩. বিজনেস ড্যাশবোর্ড ও ইউজার গাইড</h2>
+                <p>একজন সাধারণ ব্যবসায়ী বা দোকানদার OmniFlow ড্যাশবোর্ডে লগইন করে কীভাবে প্রতিদিনের কাজ পরিচালনা করবেন:</p>
+
+                <div class="step-box">
+                    <div class="step-number">১</div>
+                    <h4>অনবোর্ডিং ও চ্যানেল কানেক্ট (Onboarding)</h4>
+                    <p>রেজিস্ট্রেশনের পর ৭-ধাপের সুন্দর অনবোর্ডিং আসবে। সেখান থেকে নিজের ফেসবুক পেজ, ইনস্টাগ্রাম আইডি বা হোয়াটসঅ্যাপ বিজনেস নম্বর কানেক্ট করে নিতে হবে।</p>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">২</div>
+                    <h4>প্রোডাক্ট আপলোড (Products)</h4>
+                    <p>ড্যাশবোর্ডের <strong>Products</strong> মেন্যুতে গিয়ে পণ্যের নাম, দাম, ছবি, সাইজ, স্টক পরিমাণ এবং শর্ট ডেসক্রিপশন লিখে সেভ করুন। অথবা এক্সেল (CSV) ফাইলের মাধ্যমে একবারে ১০০০ প্রোডাক্ট আপলোড করুন।</p>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">৩</div>
+                    <h4>এআই এজেন্ট ট্রেইনিং (AI Knowledge Base)</h4>
+                    <p><strong>AI Agent</strong> মেন্যুতে গিয়ে এআই এজেন্টের নাম (যেমন: "রিয়া", "সুমন"), ভাষা (বাংলা/ইংরেজি), এবং দোকানের ডেলিভারি নিয়মকানুন লিখে দিন। <strong>Knowledge Base</strong>-এ দোকানের এফএকিউ আপলোড করলেই এআই প্রশিক্ষণ পেয়ে যাবে।</p>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-number">৪</div>
+                    <h4>ইনবক্স হ্যান্ডলিং ও অর্ডার ট্র্যাকিং (Inbox & Orders)</h4>
+                    <p>কাস্টমাররা মেসেজ দিলে ইনবক্সে ভেসে উঠবে। এআই স্বয়ংক্রিয়ভাবে কথা বলে অর্ডার নিলে তা <strong>Orders</strong> মেন্যুতে জমা হবে। সেখান থেকে ১-ক্লিকে কুরিয়ার সিলেক্ট করে "Send to Steadfast/Pathao" বাটনে চাপ দিলেই পার্সেল বুক হয়ে ট্র্যাকিং কোড কাস্টমারের কাছে চলে যাবে।</p>
+                </div>
+            </section>
+
+            <!-- SECTION 14: Security & Maintenance -->
+            <section id="security-backup">
+                <h2>১৪. নিরাপত্তা, ব্যাকআপ ও রক্ষণাবেক্ষণ পলিসি</h2>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-icon">🔒</div>
+                        <h4>ক্রিপ্টোগ্রাফিক সুরক্ষা</h4>
+                        <p>সকল থার্ড-পার্টি মেটা টোকেন, বিকাশ অ্যাপ সিক্রেট ও কুরিয়ার পাসওয়ার্ড ডেটাবেজে <strong>AES-256-GCM</strong> অ্যালগরিদমে এনক্রিপ্ট হয়ে থাকে। ডেটাবেজ হ্যাক হলেও মূল পাসওয়ার্ড কেউ পড়তে পারবে না।</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🛡️</div>
+                        <h4>টেন্যান্ট ডেটা আইসোলেশন</h4>
+                        <p>ব্যাকএন্ডের প্রতিটি ডাটাবেজ কুয়েরিতে জোরপূর্বক <code>where: { tenantId }</code> ফিল্টার যুক্ত থাকে। ক্লায়েন্ট থেকে আসা কোনো রিকোয়েস্টেই অন্য দোকানের ডেটা এক্সেস করা সম্ভব নয়।</p>
+                    </div>
+                </div>
+
+                <h3>অটোমেটিক ব্যাকআপ স্ক্রিপ্ট (MySQL Backup Script):</h3>
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>scripts/backup-db.sh</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>#!/bin/bash
+BACKUP_DIR="/var/backups/omniflow"
+DATE=$(date +"%Y%m%d_%H%M%S")
+FILENAME="omniflow_backup_${DATE}.sql.gz"
+
+mkdir -p "$BACKUP_DIR"
+
+# ডাটাবেজ ডাম্প করে gzip দিয়ে সংকুচিত করুন
+mysqldump -u omniflow_user -p'আপনার_পাসওয়ার্ড' --single-transaction --quick omniflow_db | gzip -9 > "${BACKUP_DIR}/${FILENAME}"
+
+# ৩০ দিনের বেশি পুরনো ব্যাকআপ ডিলিট করুন
+find "$BACKUP_DIR" -type f -name "omniflow_backup_*.sql.gz" -mtime +30 -delete
+echo "Backup ${FILENAME} created successfully!"</code></pre>
+                </div>
+            </section>
+
+            <!-- SECTION 15: Troubleshooting -->
+            <section id="troubleshooting">
+                <h2>১৫. সাধারণ সমস্যা ও তাৎক্ষণিক সমাধান (Troubleshooting)</h2>
+                
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>সমস্যা (Issue)</th>
+                                <th>সম্ভাব্য কারণ</th>
+                                <th>সমাধান (Solution)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Database Connection Refused</strong></td>
+                                <td>ভুল ইউজারনেম, পাসওয়ার্ড বা পোর্ট বন্ধ।</td>
+                                <td><code>.env</code> ফাইলের <code>DATABASE_URL</code> চেক করুন। পাসওয়ার্ডে স্পেশাল ক্যারেক্টার থাকলে URL Encode করুন (যেমন: <code>@</code> এর বদলে <code>%40</code>)।</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Webhook 403 Signature Mismatch</strong></td>
+                                <td>মেটার Webhook Verify Token মিলছে না।</td>
+                                <td><code>.env</code> ফাইলের <code>META_WEBHOOK_VERIFY_TOKEN</code> এবং মেটা অ্যাপ ড্যাশবোর্ডের Verify Token হুবহু একই আছে কিনা যাচাই করুন।</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AI রিপ্লাই দিচ্ছে না</strong></td>
+                                <td>OpenAI API Key ইনভ্যালিড বা কোটা শেষ।</td>
+                                <td>OpenAI প্ল্যাটফর্মে গিয়ে কার্ড ব্যালেন্স ও ব্যবহারের লিমিট চেক করুন এবং নতুন কি <code>.env</code>-তে বসান।</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Next.js সিএসএস/স্টাইল লোড হচ্ছে না</strong></td>
+                                <td>স্ট্যান্ডঅ্যালোন মোডে স্ট্যাটিক ফাইল মিসিং।</td>
+                                <td><code>apps/web/.next/static</code> ফোল্ডারটি সার্ভারের <code>.next/static</code>-এ কপি করা আছে কিনা নিশ্চিত করুন।</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECTION 16: Customer Presentation Guide -->
+            <section id="client-presentation">
+                <h2>১৬. কাস্টমার/ইউজার প্রেজেন্টেশন ও সেলস গাইড</h2>
+                <p>আপনি যখন কোনো নতুন ক্লায়েন্ট, শপ ওনার বা কাস্টমারকে OmniFlow সফটওয়্যারটি ডেমো দেবেন বা বিক্রি করতে চাইবেন, তখন কীভাবে সহজ ভাষায় প্রেজেন্টেশন করবেন:</p>
+
+                <div class="callout callout-info">
+                    <div class="callout-title">🗣️ ক্লায়েন্টের সামনে সেলস পিচ দেওয়ার কৌশল:</div>
+                    <p><em>"ভাইয়া, আপনার ফেসবুক পেজ বা হোয়াটসঅ্যাপে প্রতিদিন ১০০টা মেসেজ আসলে দেখা যায় রিপ্লাই দিতে দিতে কাস্টমার অন্য পেজে চলে যায়। রাতে ঘুমানোর পর মেসেজ দিলে তো কোনো সেলসই হয় না। আমাদের এই <strong>OmniFlow AI</strong> আপনার পেইজে এমন একজন দক্ষ সেলস ম্যানেজার বসিয়ে দেবে, যে দিন-রাত ২৪ ঘণ্টা সেকেন্ডের মধ্যে কাস্টমারের সাথে কথা বলবে, ছবির জামা বা জুতো চিনে দাম বলবে, অর্ডার কনফার্ম করবে এবং বিকাশে টাকা নিয়ে পাঠাও বা স্টেডফাস্ট কুরিয়ারে অটো বুকিং দিয়ে দেবে! আপনার কোনো বাড়তি লোকবলের বেতন দিতে হবে না, আপনার সেলস বাড়বে কমপক্ষে দ্বিগুণ!"</em></p>
+                </div>
+
+                <h3>ক্লায়েন্টকে ডেমো দেখানোর ৪টি জাদুকরী স্টেপ:</h3>
+                <ol>
+                    <li><strong>স্টেপ ১ (ছবি পাঠিয়ে টেস্ট):</strong> ক্লায়েন্টকে তার পেজে যেকোনো একটি প্রোডাক্টের ছবি ইনবক্সে পাঠাতে বলুন। দেখান কীভাবে এআই মাত্র ১ সেকেন্ডে ছবিটি চিনে সঠিক নাম ও দাম বলে দিচ্ছে।</li>
+                    <li><strong>স্টেপ ২ (ভয়েস নোট টেস্ট):</strong> ক্লায়েন্টকে বাংলায় মুখে বলে ভয়েস পাঠাতে বলুন: <em>"ভাই ডেলিভারি চার্জ কত?"</em> দেখান কীভাবে এআই সেই অডিও শুনে বাংলায় লিখিত সঠিক উত্তর দিচ্ছে।</li>
+                    <li><strong>স্টেপ ৩ (স্বয়ংক্রিয় অর্ডার প্লেসমেন্ট):</strong> চ্যাটে নাম ও ঠিকানা দিয়ে অর্ডার দিন। দেখান কীভাবে সাথে সাথে ড্যাশবোর্ডে ইনভয়েস তৈরি হয়ে গেছে এবং স্টক ১টি কমে গেছে।</li>
+                    <li><strong>স্টেপ ৪ (১-ক্লিকে কুরিয়ার বুকিং):</strong> ড্যাশবোর্ড থেকে ১-ক্লিকে স্টেডফাস্ট কুরিয়ার বুকিং বাটন চেপে কাস্টমারকে লাইভ ট্র্যাকিং কোড পাঠিয়ে দেখান।</li>
+                </ol>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('docSidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function copyCode(btn) {
+            const pre = btn.parentElement.nextElementSibling;
+            const code = pre.textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied! ✓';
+                btn.style.background = '#10b981';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            });
+        }
+
+        function filterDocs() {
+            const input = document.getElementById('docSearch').value.toLowerCase();
+            const links = document.querySelectorAll('.nav-links li');
+            
+            links.forEach(link => {
+                const text = link.textContent.toLowerCase();
+                if (text.includes(input)) {
+                    link.style.display = 'block';
+                } else {
+                    link.style.display = 'none';
+                }
+            });
+        }
+
+        // Active Link Spy
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

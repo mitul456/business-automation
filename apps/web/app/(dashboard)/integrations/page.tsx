@@ -36,6 +36,7 @@ export default function IntegrationsPage() {
     bkash: true,
     steadfast: true,
     nagad: false,
+    sslcommerz: true,
     pathao: false,
     stripe: true,
   });
@@ -215,6 +216,36 @@ export default function IntegrationsPage() {
                 onClick={() => setActiveModal('nagad')}
               >
                 {connectedItems.nagad ? 'Configure' : 'Connect'}
+              </Button>
+            </div>
+          </Card>
+
+          {/* SSLCommerz */}
+          <Card className="p-5 border-slate-200 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-700 flex items-center justify-center text-white font-bold text-xs">
+                  SSL
+                </div>
+                {connectedItems.sslcommerz ? (
+                  <Badge variant="success" size="sm">Active (Sandbox)</Badge>
+                ) : (
+                  <Badge variant="default" size="sm">Ready to Connect</Badge>
+                )}
+              </div>
+              <h3 className="font-bold text-sm text-slate-900">SSLCommerz Gateway</h3>
+              <p className="text-xs text-slate-500 mt-1">
+                Largest automated payment aggregator in Bangladesh. Supports all major debit/credit cards, MFS, and internet banking.
+              </p>
+            </div>
+            <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+              <span className="text-[11px] text-slate-400">Store: testbox</span>
+              <Button
+                size="sm"
+                variant={connectedItems.sslcommerz ? 'outline' : 'primary'}
+                onClick={() => setActiveModal('sslcommerz')}
+              >
+                {connectedItems.sslcommerz ? 'Configure' : 'Connect'}
               </Button>
             </div>
           </Card>

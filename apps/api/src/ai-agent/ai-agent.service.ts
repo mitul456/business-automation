@@ -1,23 +1,21 @@
-import { Injectable, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { KnowledgeService } from '../knowledge/knowledge.service';
-import { OpenAiClient } from '@omniflow/integrations';
+import { AiPipelineService, RunPipelineOptions } from './ai-pipeline.service';
+import { AiProviderFactory } from './providers/ai-provider.factory';
 import {
   AiAgentConfigInput,
-  CreditTransactionType,
   AiTone,
   AiLanguage,
-  ProductStatus,
 } from '@omniflow/shared';
 
 @Injectable()
 export class AiAgentService {
   private readonly logger = new Logger(AiAgentService.name);
-  private readonly openai = new OpenAiClient();
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly knowledgeService: KnowledgeService
+    private readonly pipelineService: AiPipelineService,
+    private readonly providerFactory: AiProviderFactory
   ) {}
 
   async getConfig(tenantId: string) {
@@ -29,10 +27,15 @@ export class AiAgentService {
       config = await this.prisma.aiAgentConfig.create({
         data: {
           tenantId,
-          personaName: 'OmniAssistant',
-          systemPrompt: 'You are an intelligent business assistant. You assist customers with product recommendations, order placement, and support in Bengali and English.',
+          personaName: 'Apex Assistant',
+          businessIdentity: 'OmniFlow AI Commerce Assistant for Bangladesh',
+          personality: 'Polite, sales-driven, and culturally attuned to Bangladeshi retail shoppers',
+          systemPrompt:
+            'You are the intelligent business assistant for an online brand in Bangladesh. Assist customers with product recommendations, order placement, and support in Bengali and English.',
           tone: AiTone.FRIENDLY,
           language: AiLanguage.AUTO,
+          temperature: 0.7,
+          confidenceThreshold: 0.75,
           capabilities: {
             autoOrderCreation: true,
             productSearch: true,
@@ -41,9 +44,16 @@ export class AiAgentService {
             bookingAppointment: true,
             sentimentAnalysis: true,
           },
-          handoverKeywords: ['human', 'agent', 'support', 'প্রতিনিধি', 'কথা বলতে চাই'],
-          fallbackMessageEn: 'Connecting you to our team specialist.',
-          fallbackMessageBn: 'আপনাকে আমাদের কাস্টমার প্রতিনিধির সাথে সংযুক্ত করছি।',
+          handoverKeywords: ['human', 'agent', 'support', 'প্রতিনিধি', 'কথা বলতে চাই', 'মানুষ চাই'],
+          fallbackMessageEn: 'Connecting you with our support specialist right away.',
+          fallbackMessageBn: 'আপনাকে আমাদের কাস্টমার প্রতিনিধির সাথে সংযুক্ত করছি। একটু অপেক্ষা করুন।',
+          businessHoursOnly: false,
+          businessHoursJson: {
+            enabled: false,
+            timezone: 'Asia/Dhaka',
+            startHour: 9,
+            endHour: 22,
+          },
         },
       });
     }
@@ -56,6 +66,8 @@ export class AiAgentService {
       where: { tenantId },
       update: {
         personaName: input.personaName,
+        businessIdentity: input.businessIdentity,
+        personality: input.personality,
         systemPrompt: input.systemPrompt,
         tone: input.tone,
         language: input.language,
@@ -67,10 +79,14 @@ export class AiAgentService {
         fallbackMessageBn: input.fallbackMessageBn,
         businessHoursOnly: input.businessHoursOnly,
         businessHoursJson: input.businessHoursJson as any,
+        escalationRules: input.escalationRules as any,
+        knowledgeSourceIds: input.knowledgeSourceIds as any,
       },
       create: {
         tenantId,
         personaName: input.personaName,
+        businessIdentity: input.businessIdentity,
+        personality: input.personality,
         systemPrompt: input.systemPrompt,
         tone: input.tone,
         language: input.language,
@@ -82,127 +98,70 @@ export class AiAgentService {
         fallbackMessageBn: input.fallbackMessageBn,
         businessHoursOnly: input.businessHoursOnly,
         businessHoursJson: input.businessHoursJson as any,
+        escalationRules: input.escalationRules as any,
+        knowledgeSourceIds: input.knowledgeSourceIds as any,
       },
     });
   }
 
   /**
-   * Generates AI response with full RAG context and credit deduction
+   * Executes the full production AI pipeline with credit tracking
    */
   async generateResponse(params: {
     tenantId: string;
     userQuery: string;
     imageUrl?: string;
+    audioBuffer?: Buffer;
+    conversationId?: string;
     conversationHistory?: Array<{ role: 'user' | 'assistant'; content: string }>;
   }) {
-    const { tenantId, userQuery, imageUrl, conversationHistory = [] } = params;
-
-    // 1. Check Tenant Credit Balance
-    const tenant = await this.prisma.tenant.findUnique({
-      where: { id: tenantId },
+    return this.pipelineService.executePipeline({
+      tenantId: params.tenantId,
+      userQuery: params.userQuery,
+      imageUrl: params.imageUrl,
+      audioBuffer: params.audioBuffer,
+      conversationId: params.conversationId,
+      conversationHistory: params.conversationHistory,
+      isPlaygroundSimulation: false,
     });
+  }
 
-    if (!tenant || tenant.creditBalance <= 0) {
-      return {
-        reply: 'Our AI assistant is temporarily unavailable. A human agent will assist you shortly.',
-        creditsDeducted: 0,
-        handoverRecommended: true,
-      };
-    }
-
-    const config = await this.getConfig(tenantId);
-    const keywords = (config.handoverKeywords as string[]) || [];
-
-    // 2. Check Human Handover Keywords
-    const queryLower = userQuery.toLowerCase();
-    const shouldHandover = keywords.some((kw) => queryLower.includes(kw.toLowerCase()));
-    if (shouldHandover) {
-      return {
-        reply: config.language === AiLanguage.BENGALI ? config.fallbackMessageBn : config.fallbackMessageEn,
-        creditsDeducted: 0,
-        handoverRecommended: true,
-      };
-    }
-
-    // 3. Vision Matching (if customer sent photo)
-    let visionContext = '';
-    let matchedProducts: any[] = [];
-    if (imageUrl) {
-      const visionResult = await this.openai.analyzeProductImage(imageUrl);
-      visionContext = `\n[Image Analysis: Customer shared an image depicting ${visionResult.description}. Suggested search terms: ${visionResult.suggestedSearchKeywords.join(', ')}]`;
-
-      // Search products matching keywords
-      matchedProducts = await this.prisma.product.findMany({
-        where: {
-          tenantId,
-          status: ProductStatus.ACTIVE,
-          OR: visionResult.suggestedSearchKeywords.map((kw) => ({
-            name: { contains: kw },
-          })),
-        },
-        take: 3,
-      });
-    }
-
-    // 4. RAG Knowledge Retrieval
-    const relevantChunks = await this.knowledgeService.searchRelevantChunks(tenantId, userQuery, 3);
-    const ragContext = relevantChunks.length > 0
-      ? `\n[STORE KNOWLEDGE BASE CONTEXT]:\n${relevantChunks.join('\n---\n')}\n`
-      : '';
-
-    // 5. Product Catalog Quick Lookup (if query mentions price or product)
-    const storeProducts = await this.prisma.product.findMany({
-      where: { tenantId, status: ProductStatus.ACTIVE },
-      select: { name: true, price: true, sku: true, stockQuantity: true },
-      take: 8,
+  /**
+   * Executes the AI pipeline in sandbox playground mode with deep diagnostics
+   */
+  async runPlaygroundSimulation(params: {
+    tenantId: string;
+    userQuery: string;
+    imageUrl?: string;
+    audioBuffer?: Buffer;
+    conversationHistory?: Array<{ role: 'user' | 'assistant'; content: string }>;
+  }) {
+    return this.pipelineService.executePipeline({
+      tenantId: params.tenantId,
+      userQuery: params.userQuery,
+      imageUrl: params.imageUrl,
+      audioBuffer: params.audioBuffer,
+      conversationHistory: params.conversationHistory,
+      isPlaygroundSimulation: true,
     });
-    const catalogContext = `\n[AVAILABLE PRODUCTS IN STORE]:\n` +
-      storeProducts.map((p) => `- ${p.name} (SKU: ${p.sku}) | Price: ৳${p.price} | Stock: ${p.stockQuantity}`).join('\n');
+  }
 
-    // 6. Build Final System Prompt
-    const fullSystemPrompt = `${config.systemPrompt}
-Tone: ${config.tone}.
-Language: ${config.language}.
-${ragContext}
-${catalogContext}
-${visionContext}
-Answer concisely and politely. Encourage orders with Cash on Delivery (COD) or bKash.`;
+  /**
+   * Whisper STT speech-to-text audio transcription
+   */
+  async transcribeVoice(audioBuffer: Buffer, filename?: string) {
+    const provider = this.providerFactory.getProvider();
+    return provider.transcribeAudio(audioBuffer, filename);
+  }
 
-    const chatMessages: any[] = [
-      ...conversationHistory.slice(-6),
-      { role: 'user', content: userQuery || 'Product photo' },
-    ];
-
-    const aiResult = await this.openai.generateChatResponse({
-      messages: chatMessages,
-      systemPrompt: fullSystemPrompt,
-      temperature: config.temperature,
-    });
-
-    // 7. Deduct credits & record transaction
-    const creditCost = imageUrl ? 3 : 1;
-    await this.prisma.$transaction([
-      this.prisma.tenant.update({
-        where: { id: tenantId },
-        data: { creditBalance: { decrement: creditCost } },
-      }),
-      this.prisma.aiCreditTransaction.create({
-        data: {
-          tenantId,
-          amount: -creditCost,
-          type: imageUrl ? CreditTransactionType.USAGE_VISION : CreditTransactionType.USAGE_CHAT,
-          balanceAfter: tenant.creditBalance - creditCost,
-          description: `AI ${imageUrl ? 'Vision + Chat' : 'Chat'} Response`,
-        },
-      }),
-    ]);
-
-    return {
-      reply: aiResult.content,
-      tokensUsed: aiResult.tokensUsed,
-      creditsDeducted: creditCost,
-      matchedProducts,
-      handoverRecommended: false,
-    };
+  /**
+   * OpenAI TTS text-to-speech audio synthesis
+   */
+  async synthesizeVoice(text: string, voice?: string) {
+    const provider = this.providerFactory.getProvider();
+    if (provider.synthesizeSpeech) {
+      return provider.synthesizeSpeech(text, voice);
+    }
+    return Buffer.from([]);
   }
 }

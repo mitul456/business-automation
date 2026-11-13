@@ -9,7 +9,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
-import { WsMessageEvent, WsConversationUpdateEvent } from '@omniflow/shared';
+import { WsMessageEvent, WsConversationUpdateEvent, DeliveryStatus, ConversationStatus } from '@omniflow/shared';
 
 @WebSocketGateway({
   cors: {
@@ -56,14 +56,49 @@ export class InboxGateway implements OnGatewayConnection, OnGatewayDisconnect {
    * Broadcast message to conversation room and tenant inbox
    */
   emitNewMessage(event: WsMessageEvent) {
-    this.server.to(`conversation:${event.conversationId}`).emit('message:new', event);
-    this.server.to(`tenant:${event.tenantId}`).emit('inbox:message_received', event);
+    if (this.server) {
+      this.server.to(`conversation:${event.conversationId}`).emit('message:new', event);
+      this.server.to(`tenant:${event.tenantId}`).emit('inbox:message_received', event);
+    }
   }
 
   /**
    * Broadcast conversation state changes (status, unread count, assignment)
    */
   emitConversationUpdate(event: WsConversationUpdateEvent) {
-    this.server.to(`tenant:${event.tenantId}`).emit('conversation:updated', event);
+    if (this.server) {
+      this.server.to(`tenant:${event.tenantId}`).emit('conversation:updated', event);
+    }
+  }
+
+  /**
+   * Broadcast message delivery status change (SENT, DELIVERED, READ, FAILED)
+   */
+  emitDeliveryStatus(event: {
+    tenantId: string;
+    conversationId: string;
+    messageId: string;
+    status: DeliveryStatus;
+  }) {
+    if (this.server) {
+      this.server.to(`conversation:${event.conversationId}`).emit('message:status', event);
+      this.server.to(`tenant:${event.tenantId}`).emit('inbox:delivery_status', event);
+    }
+  }
+
+  /**
+   * Broadcast human takeover or handover status change
+   */
+  emitHandoverChanged(event: {
+    tenantId: string;
+    conversationId: string;
+    status: ConversationStatus;
+    aiAssisted: boolean;
+    assignedMemberId?: string;
+  }) {
+    if (this.server) {
+      this.server.to(`conversation:${event.conversationId}`).emit('handover:changed', event);
+      this.server.to(`tenant:${event.tenantId}`).emit('conversation:updated', event);
+    }
   }
 }
